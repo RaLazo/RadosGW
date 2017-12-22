@@ -13,7 +13,7 @@ secret_key = 'VfuN9KgJaFfkL0POJbkVJ8FnpzaRgTHzowfj3Xy3'
 conn = boto.connect_s3(
 aws_access_key_id = access_key,
 aws_secret_access_key = secret_key,
-host = '192.168.1.3',
+host = '172.16.136.3',
 is_secure=False,
 calling_format = boto.s3.connection.OrdinaryCallingFormat(),
 )
@@ -26,18 +26,19 @@ def lists():
         ) 
 
 def delete():
-    print("Enter bucketname")
-    bucketname=raw_input(">>> ")
+    bn=bn()
     conn.delete_bucket(bucketname)
 
 def create():
-    print("Enter bucketname")
-    bucketname=raw_input(">>> ")
-    bucket = conn.create_bucket(bucketname)
+    bn=bn()
+    bucket = conn.create_bucket(bn)
 
-def listobjects():
+def bn():
     print("Enter bucketname")
-    bucketname=raw_input(">>> ")
+    bn=raw_input(">>> ")
+    return bn
+
+def listobjects(bucketname):
     bucket = conn.get_bucket(bucketname)
     for key in bucket.list():
         print "{name}\t{size}\t{modified}".format(
@@ -46,7 +47,9 @@ def listobjects():
                 modified = key.last_modified,
                 )
 
+
 def switch(x):
+    y=x.split()
     if x == 'l':
         lists()
     elif x =='d':
@@ -57,16 +60,18 @@ def switch(x):
         h()
     elif x == 'c':
         create()
-    elif x == 'lo':
-        listobjects()
+    elif len(x.split())>1:
+        if y[0]=='lo':
+             listobjects(y[1])
     #else:
         #print("there is not typo press h to get information")
 
 def h():
     print("Choose Function")
-    print ("- l, List your Buckets")
-    print ("- d, Delete a Bucket")
-    print ("- c, Create a Bucket")
-    print ("- lo, a Bucket")
+    print ("- l, list your buckets")
+    print ("- d, delete a bucket")
+    print ("- c, create a bucket")
+    print ("- lo, list objects of an bucket")
+    print ("- mo. make an object => bucket")
     print ("- h,help")
     print ("- e,exit")  
