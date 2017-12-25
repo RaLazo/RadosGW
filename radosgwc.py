@@ -11,6 +11,6 @@ import functions as func
 print("RadosGW - Connector")
 i=0    
 while i != 1:
-    x=raw_input(">>> ")
+    x=input(">>> ")
     i=func.switch(x)
 

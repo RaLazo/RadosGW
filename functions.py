@@ -20,10 +20,10 @@ calling_format = boto.s3.connection.OrdinaryCallingFormat(),
 
 def lists():
     for bucket in conn.get_all_buckets():
-        print "{name}\t{created}".format(
+        print ("{name}\t{created}".format(
                 name = bucket.name,
                 created = bucket.creation_date,
-        ) 
+        ))
 
 def delete():
     bn=bn()
@@ -35,17 +35,17 @@ def create():
 
 def bn():
     print("Enter bucketname")
-    bn=raw_input(">>> ")
+    bn=input(">>> ")
     return bn
 
 def listobjects(bucketname):
     bucket = conn.get_bucket(bucketname)
     for key in bucket.list():
-        print "{name}\t{size}\t{modified}".format(
+        print ("{name}\t{size}\t{modified}".format(
                 name = key.name,
                 size = key.size,
                 modified = key.last_modified,
-                )
+                ))
 
 
 def switch(x):
@@ -63,17 +63,17 @@ def switch(x):
     elif len(x.split())>1:
         if y[0]=='lo':
              listobjects(y[1])
-    elif len(x.split())>1:
-        if y[0]=='mo':
+    #elif len(x.split())>1:
+        #if y[0]=='mo':
     #else:
         #print("is not a typo press h to get information")
-
+   
 def h():
     print("Choose Function")
-    print ("- l, list your buckets")
-    print ("- d, delete a bucket")
-    print ("- c, create a bucket")
-    print ("- lo, list objects of an bucket")
-    print ("- mo. make an object => bucket")
-    print ("- h,help")
-    print ("- e,exit")  
+    print("- l, list your buckets")
+    print("- d, delete a bucket")
+    print("- c, create a bucket")
+    print("- lo, list objects of an bucket")
+    print("- mo. make an object => bucket")
+    print("- h,help")
+    print("- e,exit")
