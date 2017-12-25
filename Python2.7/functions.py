@@ -63,8 +63,10 @@ def switch(x):
     elif len(x.split())>1:
         if y[0]=='lo':
              listobjects(y[1])
+    elif len(x.split())>1:
+        if y[0]=='mo':
     #else:
-        #print("there is not typo press h to get information")
+        #print("is not a typo press h to get information")
 
 def h():
     print("Choose Function")
