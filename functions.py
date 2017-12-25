@@ -27,7 +27,9 @@ def lists():
 
 def delete():
     bn=bn()
-    conn.delete_bucket(bucketname)
+    for key in bn:
+        key.delete()
+    conn.delete_bucket(bn)
 
 def create():
     bn=bn()
@@ -69,7 +71,7 @@ def switch(x):
         #print("is not a typo press h to get information")
    
 def h():
-    print("Choose Function")
+    print("Functions:")
     print("- l, list your buckets")
     print("- d, delete a bucket")
     print("- c, create a bucket")
