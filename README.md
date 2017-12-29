@@ -6,7 +6,7 @@ auf. Wenn diese Verbindung steht kann man z.B.: Buckets erstellen,auflisten, . .
 
 ## Erster Schritt
 
-Zuerst muss man die boto libary für python herunterladen.
+Zuerst muss man die boto libary fï¿½r python herunterladen.
 Falls man python2.7 noch nicht installiert hat sollte man die auch tun. 
 
 ```
@@ -15,8 +15,12 @@ pip install boto
 
 ```
 ## Verwendung
+Die Datei radosgwc.py muss mit dem Pythoninterpreter ausgefÃ¼hrt werden: 
 
-Alle Option erhält man mit 'h' => help
+```
+pyhton radosgwc.py
+```
+Alle Option erhï¿½lt man mit 'h' => help
 
 ```
 RadosGW - Connector
