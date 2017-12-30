@@ -56,21 +56,15 @@ def create_object(bn, object_name, object_content):
 
 def delete_object(bn,o):
     bucket = conn.get_bucket(bn)
-    k = Key(bn)
-    k.key(o)
-    k.delete()
+    for key in bucket.list():
+        if key.name == o:
+            key.delete()
 
 def switch_bucket(x):
     y=x.split()
-    if len(x.split())>0:
-        if y[0] == 'l':
-            lists()
-        elif y[0] == 'd':
+    if len(x.split())>1:
+        if y[0] == 'd':
             delete(y[1])
-        elif y[0] == 'e':
-            return 1
-        elif y[0] == 'h':
-            h()
         elif y[0] == 'c':
             create(y[1])
         elif y[0] == 'mo':
@@ -79,8 +73,14 @@ def switch_bucket(x):
             list_objects(y[1])
         elif y[0]=='do':
             delete_object(y[1],y[2])            
-    #else:
+    else:
         #print("is not a typo press h to get information")
+        if x == 'e':
+            return 1
+        elif x == 'h':
+            h()
+        elif x == 'l':
+            lists()
 def h():
     print("\n Bucket Functions:")
     print(" - l, list your buckets")

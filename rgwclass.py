@@ -58,6 +58,11 @@ class rgw(object):
         key = bucket.new_key(object_name)
         key.set_contents_from_string(object_content)
 
+    def delete_object(self,o):
+    bucket = conn.get_bucket(self.bucketname)
+    for key in bucket.list():
+        if key.name == o:
+            key.delete()
 reinhard=rgw('C8QE7PRORJGH4B52ZOZ7','VfuN9KgJaFfkL0POJbkVJ8FnpzaRgTHzowfj3Xy3','172.16.136.3')
 reinhard.show_data()
 reinhard.lists()
