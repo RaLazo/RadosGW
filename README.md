@@ -7,11 +7,11 @@ auf. Wenn diese Verbindung steht kann man z.B.: Buckets erstellen,auflisten, . .
 Inhaltsverzeichnis
 =================
 
-  * [RadosGW - Connector](#RadosGW-Connector)
-   * [Erster Schritt](##Erster_Schritt)
-   * [Verwendung](##Verwendung)
-  * [RadosGW - Connector GUI](#RadosGW-Connector-GUI)
-  * [RadosGW - Connector Webinterface](#RadosGW-Connector-Webinterface)
+  * [RadosGW - Connector](#radosgw-connector)
+    * [Erster Schritt](#erster_schritt)
+    * [Verwendung](#verwendung)
+  * [RadosGW - Connector GUI](#radosgw-connector-gui)
+  * [RadosGW - Connector Webinterface](#radosgw-connector-webinterface)
 
 Erster_Schritt
 =================
