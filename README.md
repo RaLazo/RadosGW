@@ -4,6 +4,15 @@
 Dieses Programm baut eine Verbindung zu einem RadosGW eines Ceph - Clusters
 auf. Wenn diese Verbindung steht kann man z.B.: Buckets erstellen,auflisten, . . .  
 
+Table of contents
+=================
+
+  * [RadosGW - Connector](#RadosGW - Connector)
+   * [Erster Schritt](##Erster Schritt)
+   * [Verwendung](##Verwendung)
+  * [RadosGW - Connector GUI](#RadosGW - Connector GUI)
+  * [RadosGW - Connector Webinterface](#RadosGW - Connector Webinterface)
+
 ## Erster Schritt
 
 Zuerst muss man die boto libary für python herunterladen.
