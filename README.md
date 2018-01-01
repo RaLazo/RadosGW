@@ -1,10 +1,10 @@
-# RadosGW - Connector
-
+RadosGW - Connector
+=================
 
 Dieses Programm baut eine Verbindung zu einem RadosGW eines Ceph - Clusters
 auf. Wenn diese Verbindung steht kann man z.B.: Buckets erstellen,auflisten, . . .  
 
-Table of contents
+Inhaltsverzeichnis
 =================
 
   * [RadosGW - Connector](#RadosGW-Connector)
@@ -13,8 +13,8 @@ Table of contents
   * [RadosGW - Connector GUI](#RadosGW-Connector-GUI)
   * [RadosGW - Connector Webinterface](#RadosGW-Connector-Webinterface)
 
-## Erster_Schritt
-
+Erster_Schritt
+=================
 Zuerst muss man die boto libary für python herunterladen.
 Falls man python2.7 noch nicht installiert hat sollte man die auch tun. 
 
@@ -22,7 +22,9 @@ Falls man python2.7 noch nicht installiert hat sollte man die auch tun.
 sudo apt-get install python
 pip install boto
 ```
-## Verwendung
+Verwendung
+=================
+
 Die Datei radosgwc.py muss mit dem Pythoninterpreter ausgeführt werden: 
 
 ```
@@ -48,7 +50,8 @@ RadosGW - Connector
  - e,exit
 >>>
 ```
-# RadosGW-Connector-GUI
+RadosGW-Connector-GUI
+=================
 
 Ist eine Grafischebenutzeroberfläche um Buckets zu verwalten 
 Zurzeit ist diese noch in Arbeit und nicht voll funktionsfähig. 
@@ -59,7 +62,8 @@ Der derzeitige entwurf sieht wie folgt aus:
   <img src="GUI/icon/GUI.PNG" />
 </p>
 
-# RadosGW-Connector-Webinterface
+RadosGW-Connector-Webinterface
+=================
 
 Ist eine Weboberfläche über die man leicht Buckets verwalten kann, diese befindet 
 sich derzeit auch nochh in Arbeit
