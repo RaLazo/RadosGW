@@ -8,7 +8,7 @@ Inhaltsverzeichnis
 =================
 
   * [RadosGW - Connector](#radosgw-connector)
-    * [Erster Schritt](#erster schritt)
+    * [Erster Schritt](#ersterschritt)
     * [Verwendung](#verwendung)
   * [RadosGW - Connector GUI](#radosgw-connector-gui)
   * [RadosGW - Connector Webinterface](#radosgw-connector-webinterface)
