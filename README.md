@@ -8,12 +8,12 @@ Inhaltsverzeichnis
 =================
 
   * [RadosGW - Connector](#radosgw-connector)
-    * [Erster Schritt](#erster_schritt)
+    * [Erster Schritt](#erster schritt)
     * [Verwendung](#verwendung)
   * [RadosGW - Connector GUI](#radosgw-connector-gui)
   * [RadosGW - Connector Webinterface](#radosgw-connector-webinterface)
 
-Erster_Schritt
+Erster Schritt
 =================
 Zuerst muss man die boto libary für python herunterladen.
 Falls man python2.7 noch nicht installiert hat sollte man die auch tun. 
