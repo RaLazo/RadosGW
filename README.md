@@ -49,8 +49,7 @@ Zurzeit ist diese noch in Arbeit und nicht voll funktionsfähig.
 Der derzeitige entwurf sieht wie folgt aus:
 
 <p align="center">
-  <img src="icon/GUI.PNG" width="350"/>
-  <img src="icon/GUI.PNG" width="350"/>
+  <img src="GUI/icon/GUI.PNG" />
 </p>
 
 # RadosGW - Connector Webinterface
