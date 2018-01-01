@@ -87,7 +87,7 @@ def h():
     print(" - d, delete a bucket")
     print(" - c, create a bucket")
     print("\n Object Functions:")
-    print("\n If you want to use \n this functions you have to \n be in a Bucket \n")
+   # print("\n If you want to use \n this functions you have to \n be in a Bucket \n")
     print(" - lo, list objects")
     print(" - mo, make an object")
     print(" - do, delete an object")

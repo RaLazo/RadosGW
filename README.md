@@ -25,13 +25,35 @@ Alle Option erhält man mit 'h' => help
 ```
 RadosGW - Connector
 >>> h
-Choose Function
-- l, list your buckets
-- d, delete a bucket
-- c, create a bucket
-- lo, list objects of an bucket
-- mo. make an object => bucket
-- h,help
-- e,exit
+
+ Bucket Functions:
+ - l, list your buckets
+ - d, delete a bucket
+ - c, create a bucket
+
+ Object Functions:
+ - lo, list objects
+ - mo, make an object
+ - do, delete an object
+
+ Others:
+ - h,help
+ - e,exit
 >>>
 ```
+# RadosGW - Connector GUI
+
+Ist eine Grafischebenutzeroberfläche um Buckets zu verwalten 
+Zurzeit ist diese noch in Arbeit und nicht voll funktionsfähig. 
+
+Der derzeitige entwurf sieht wie folgt aus:
+
+<p align="center">
+  <img src="icon/GUI.PNG" width="350"/>
+  <img src="icon/GUI.PNG" width="350"/>
+</p>
+
+# RadosGW - Connector Webinterface
+
+Ist eine Weboberfläche über die man leicht Buckets verwalten kann, diese befindet 
+sich derzeit auch nochh in Arbeit
