@@ -23,15 +23,18 @@ class rgw(object):
         is_secure=False,
         calling_format = boto.s3.connection.OrdinaryCallingFormat(),
         )
-        self.bucketname = 'empty'
+        #self.bucketname = 'empty'
         self.dp = 'empty'
+        self.inbucket = 0
     
     def show_data(self):
+        print("\nUserdata:")
         print("Access_key: "+self.access_key)
         print("Secret_key: "+self.secret_key)
         print("Host: "+self.server)
         print("Bucket: "+self.bucketname)
         print("Downloadpath: "+self.dp)
+        print("Bucketstatus: "+str(self.inbucket))
 
     def __lists(self):
         for bucket in self.conn.get_all_buckets():
@@ -40,14 +43,21 @@ class rgw(object):
                 created = bucket.creation_date,
             )) 
 
-    def download_path(self,path):
-        self.dp = path
+        
 
     def __create(self):
         self.conn.create_bucket(self.bucketname)
     
     def bn(self,bn):
-        self.bucketname = bn
+        for bucket in self.conn.get_all_buckets():
+            if bucket.name == bn:
+                self.bucketname = bn
+                self.inbucket=1
+                i=1
+        try:
+             i
+        except NameError:
+            print ("Bucket not exist!")
 
     def __delete(self):
         bucketname = self.conn.get_bucket(self.bucketname)
@@ -77,7 +87,7 @@ class rgw(object):
 
     def __uploader(self,path):
         #Get file info
-        b = self.conn.get_bucket(self.bucketname)
+        b = self.conn.get_bucket()
         source_path = path
         print("Uploading File "+source_path+" to bucket "+self.bucketname)
         source_size = os.stat(source_path).st_size
@@ -106,46 +116,76 @@ class rgw(object):
     def switch(self,x):
         y=x.split()
         if len(x.split())>1:
+            
+            if (y[0]=='cd') or (self.inbucket==1):
+                if(y[0]=='cd'):
+                    self.bn(y[1]) 
+            else:
+                self.bucketname = y[1]
+            
             if y[0] == 'mo':
-                self.create_object(y[1],y[2],y[3])
+                self.__create_object(y[2],y[3])
             elif y[0]=='lo':
-                self.list_objects(y[1])
+                self.__list_objects()
             elif y[0]=='do':
-                self.delete_object(y[1],y[2])
+                self.__delete_object(y[1])
             elif y[0]=='u':
-                self.uploader(y[1],y[2])
+                self.__uploader(y[2])
             elif y[0]=='d':
-                self.downloader(y[1],y[2],y[3])
+                try:
+                 y[3]
+                except NameError:
+                    self.dp=y[3]
+                self.__downloader(y[2])
+            elif y[0] == 'downpath':
+                self.dp=y[1]
+            
         else:
             #print("is not a typo press h to get information")
             if x == 'e':
                 return 1
             elif x == 'rm':
-                self.delete()
+                self.__delete()
             elif x == 'c':
-                self.create()
+                self.__create()
             elif x == 'h':
                 self.h()
-            elif x == 'l':
-                self.lists()
+            elif x == 'l':  
+                self.__lists()
             elif x == 'space':
                 for i in range(50):
                     print()
+            elif x =='eb':
+                self.inbucket = 0
+                self.bucketname = "empty"
+            elif x =='showd':
+                self.show_data()
+            elif x =='lo':
+                self.__list_objects()
+            
     
+    def special_help():
+        pass
+
     def h(self):
         print("\n Bucket Functions:")
         print(" - l, list your buckets")
         print(" - rm, delete a bucket")
         print(" - c, create a bucket")
+        print(" - cd, get into a bucket")
         print("\n Object Functions:")
-        # print("\n If you want to use \n this functions you have to \n be in a Bucket \n")
+        print(" - space, make some space")
         print(" - lo, list objects")
         print(" - mo, make an object")
         print(" - do, delete an object")
         print(" - u, upload to bucket")
         print(" - d, download from bucket")
+        print(" - eb, get out of a bucket")
         print("\n Others:")
         print(" - h, help")
         print(" - space, make some space")
+        print(" - showd, shows data of the user")
+        print(" - downpath, set Downloadpath")
         print(" - e, exit")
+        
 
