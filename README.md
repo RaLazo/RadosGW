@@ -37,17 +37,20 @@ RadosGW - Connector
 
  Bucket Functions:
  - l, list your buckets
- - d, delete a bucket
+ - rm, delete a bucket
  - c, create a bucket
 
  Object Functions:
  - lo, list objects
  - mo, make an object
  - do, delete an object
+ - u, upload to bucket
+ - d, download from bucket
 
  Others:
- - h,help
- - e,exit
+ - h, help
+ - space, make some space
+ - e, exit
 >>>
 ```
 RadosGW-Connector-GUI
