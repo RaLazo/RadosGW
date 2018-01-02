@@ -21,6 +21,7 @@ Falls man python2.7 noch nicht installiert hat sollte man die auch tun.
 ```
 sudo apt-get install python
 pip install boto
+pip install FileChunkIO
 ```
 Verwendung
 =================
