@@ -15,11 +15,10 @@ Inhaltsverzeichnis
 
 Erster_Schritt
 =================
-Zuerst muss man die boto libary für python herunterladen.
-Falls man python2.7 noch nicht installiert hat sollte man die auch tun. 
+Zuerst muss man die boto & FileChunkIO libary für python heruntergeladen werden.
+(Falls man python3 noch nicht installiert ist bitte nachholen!!!). 
 
 ```
-sudo apt-get install python
 pip install boto
 pip install FileChunkIO
 ```
