@@ -37,23 +37,29 @@ pyhton radosgwc.py
 Alle Option erhält man mit 'h' => help
 ```
 RadosGW - Connector
+
 >>> h
 
  Bucket Functions:
  - l, list your buckets
  - rm, delete a bucket
  - c, create a bucket
+ - cd, get into a bucket
 
  Object Functions:
+ - space, make some space
  - lo, list objects
  - mo, make an object
  - do, delete an object
  - u, upload to bucket
  - d, download from bucket
+ - eb, get out of a bucket
 
  Others:
  - h, help
  - space, make some space
+ - showd, shows data of the user
+ - downpath, set Downloadpath
  - e, exit
 >>>
 ```
