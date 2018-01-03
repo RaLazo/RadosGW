@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="GUI/icon/Ceph_OSS.png" width=450px height=150px />
+  <img src="GUI/icon/RGWC.PNG"/>
 </p>
 
 RadosGW - Connector
