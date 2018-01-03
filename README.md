@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="GUI/icon/RGWC.PNG" witdh=100px height=100px/>
+  <img src="GUI/icon/RGWC.PNG" witdh=300px height=300px/>
 </p>
 
 RadosGW - Connector
