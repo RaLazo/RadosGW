@@ -29,9 +29,11 @@ pip install FileChunkIO
 ```
 Vorbereitung
 =================
+
 <p align="center">
   <img src="GUI/PICs/Userdata.svg" witdh=300px height=300px/>
 </p>
+
 Verwendung
 =================
 Die Datei radosgwc.py muss mit dem Pythoninterpreter ausgeführt werden: 
