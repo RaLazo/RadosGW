@@ -23,7 +23,7 @@ class rgw(object):
         is_secure=False,
         calling_format = boto.s3.connection.OrdinaryCallingFormat(),
         )
-        #self.bucketname = 'empty'
+        self.bucketname = 'empty'
         self.dp = 'empty'
         self.inbucket = 0
     
@@ -132,22 +132,25 @@ class rgw(object):
             elif y[0]=='u':
                 self.__uploader(y[2])
             elif y[0]=='d':
-                try:
-                 y[3]
-                except NameError:
+                #try:
+                 #y[3]
+                #except NameError:
+                if self.dp == "empty":
                     self.dp=y[3]
+                else:
+                    print("insert downpath")
                 self.__downloader(y[2])
             elif y[0] == 'downpath':
                 self.dp=y[1]
+            elif y[0] == 'rm':
+                self.__delete()
+            elif y[0] == 'c':
+                self.__create()
             
         else:
             #print("is not a typo press h to get information")
             if x == 'e':
                 return 1
-            elif x == 'rm':
-                self.__delete()
-            elif x == 'c':
-                self.__create()
             elif x == 'h':
                 self.h()
             elif x == 'l':  
@@ -174,7 +177,6 @@ class rgw(object):
         print(" - c, create a bucket")
         print(" - cd, get into a bucket")
         print("\n Object Functions:")
-        print(" - space, make some space")
         print(" - lo, list objects")
         print(" - mo, make an object")
         print(" - do, delete an object")

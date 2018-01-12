@@ -3,7 +3,7 @@
 # Eng.: Rafael Lazenhofer
 # Ver.: 1.0
 # Date: 21.12.2017
-from rgwclass import rgw
+from old/rgwclass import rgw
 
 # main
 print("\nRadosGW - Connector\n")
