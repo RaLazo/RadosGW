@@ -26,9 +26,8 @@ class rgw(object):
         self.bucketname = 'empty'
         self.dp = 'empty'
         self.inbucket = 0
-    
+
     def show_data(self):
-        print("\nUserdata:")
         print("Access_key: "+self.access_key)
         print("Secret_key: "+self.secret_key)
         print("Host: "+self.server)
@@ -48,22 +47,31 @@ class rgw(object):
     def __create(self):
         self.conn.create_bucket(self.bucketname)
     
-    def bn(self,bn):
-        for bucket in self.conn.get_all_buckets():
-            if bucket.name == bn:
-                self.bucketname = bn
-                self.inbucket=1
-                i=1
+    def bn(self,bn,x):
+        if x==1:      
+            for bucket in self.conn.get_all_buckets():
+                if bucket.name == bn:
+                    self.bucketname = bn
+                    self.inbucket=1
+                    i=1
+        else:
+            for bucket in self.conn.get_all_buckets():
+                if bucket.name == bn:
+                    self.bucketname = bn
+                    i=1
         try:
              i
         except NameError:
-            print ("Bucket not exist!")
+            print ("ERROR: Bucket not exist!")
 
     def __delete(self):
-        bucketname = self.conn.get_bucket(self.bucketname)
-        for key in bucketname:
-            key.delete()
-        self.conn.delete_bucket(bucketname)
+        bucket = self.conn.get_bucket(self.bucketname)
+        for bucket in self.conn.get_all_buckets():
+                if bucket.name == self.bucketname:
+                    for key in bucket:
+                        key.delete()
+                    self.conn.delete_bucket(bucket)
+                    return
     
     def __list_objects(self):
         bucket = self.conn.get_bucket(self.bucketname)
@@ -87,10 +95,14 @@ class rgw(object):
 
     def __uploader(self,path):
         #Get file info
-        b = self.conn.get_bucket()
+        b = self.conn.get_bucket(self.bucketname)
         source_path = path
         print("Uploading File "+source_path+" to bucket "+self.bucketname)
-        source_size = os.stat(source_path).st_size
+        try:    
+            source_size = os.stat(source_path).st_size
+        except FileNotFoundError:
+            print("ERROR: File not Found")
+            return
         # Create a multipart upload request
         mp = b.initiate_multipart_upload(os.path.basename(source_path))
         # Use a chunk size of 50 MiB
@@ -119,10 +131,9 @@ class rgw(object):
             
             if (y[0]=='cd') or (self.inbucket==1):
                 if(y[0]=='cd'):
-                    self.bn(y[1]) 
+                    self.bn(y[1],1) 
             else:
                 self.bucketname = y[1]
-            
             if y[0] == 'mo':
                 self.__create_object(y[2],y[3])
             elif y[0]=='lo':
@@ -130,22 +141,31 @@ class rgw(object):
             elif y[0]=='do':
                 self.__delete_object(y[1])
             elif y[0]=='u':
-                self.__uploader(y[2])
+                    self.__uploader(y[1])
             elif y[0]=='d':
                 #try:
                  #y[3]
                 #except NameError:
                 if self.dp == "empty":
-                    self.dp=y[3]
+                    try:
+                        self.dp=y[2]
+                    except IndexError:
+                        print("ERROR: Invalid Downloadpath")
+                        
                 else:
                     print("insert downpath")
-                self.__downloader(y[2])
+                
+                self.__downloader(y[1])
+
             elif y[0] == 'downpath':
                 self.dp=y[1]
             elif y[0] == 'rm':
                 self.__delete()
             elif y[0] == 'c':
                 self.__create()
+            elif y[0] == 'bn':
+                self.bn(y[1],0)
+                
             
         else:
             #print("is not a typo press h to get information")
@@ -176,6 +196,7 @@ class rgw(object):
         print(" - rm, delete a bucket")
         print(" - c, create a bucket")
         print(" - cd, get into a bucket")
+        print(" - bn, set a fix bucket name")
         print("\n Object Functions:")
         print(" - lo, list objects")
         print(" - mo, make an object")

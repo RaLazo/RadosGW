@@ -1,6 +1,6 @@
 <p align="center">
   <img src="GUI/icon/RGWC.PNG" witdh=300px height=300px/>
-</p>+
+</p>
 
 RadosGW - Connector
 =================
@@ -16,6 +16,7 @@ Inhaltsverzeichnis
     * [Verwendung](#verwendung)
   * [RadosGW - Connector GUI](#radosgw-connector-gui)
   * [RadosGW - Connector Webinterface](#radosgw-connector-webinterface)
+  * [Vorbereitung](#vorbereitung)
 
 Erster_Schritt
 =================
@@ -26,9 +27,13 @@ Zuerst muss man die boto & FileChunkIO libary für python heruntergeladen werden
 pip install boto
 pip install FileChunkIO
 ```
+Vorbereitung
+=================
+<p align="center">
+  <img src="GUI/PICs/Userdata.svg" witdh=300px height=300px/>
+</p>
 Verwendung
 =================
-
 Die Datei radosgwc.py muss mit dem Pythoninterpreter ausgeführt werden: 
 
 ```

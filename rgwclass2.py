@@ -84,7 +84,7 @@ class rgw(object):
     def delete(self):
         '''
         This function delete a bucket
-        (without carrying if it`s full or empty)
+        (Doesn´t  if it`s full or empty)
         '''
         bucketname = self.conn.get_bucket(self.bucketname)
         for key in bucketname:
@@ -135,7 +135,11 @@ class rgw(object):
         print("Uploading File "+source_path+" to bucket "+self.bucketname)
         source_size = os.stat(source_path).st_size
         # Create a multipart upload request
-        mp = b.initiate_multipart_upload(os.path.basename(source_path))
+        try:
+            mp = b.initiate_multipart_upload(os.path.basename(source_path))
+        except FileNotFoundError:
+            print("ERROR: File not Found")
+            return
         # Use a chunk size of 50 MiB
         chunk_size = 52428800
         chunk_count = int(math.ceil(source_size / float(chunk_size)))
