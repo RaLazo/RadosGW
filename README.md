@@ -31,7 +31,7 @@ Vorbereitung
 =================
 
 <p align="center">
-  <img src="/PICs/Userdata.PNG" witdh=300px height=300px/>
+  <img src="/PICs/UserData.PNG" witdh=300px height=300px/>
 </p>
 
 Verwendung
