@@ -29,6 +29,8 @@ pip install FileChunkIO
 ```
 Vorbereitung
 =================
+Bevor Sie das Programm in verwendung nehmen können müssen Sie
+die Userdaten im File UserData.txt eintragen:
 
 <p align="center">
   <img src="/PICs/UserData.PNG" witdh=300px height=300px/>
