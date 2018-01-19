@@ -2,15 +2,6 @@
 # Eng.: Rafael Lazenhofer
 # Ver.: 2.0
 # Date: 12.01.2018
-
-def home(request):
-    return render(request, 'index.html')
-    #return HttpResponse ('home')
-
-def content(request):
-    return render(request, 'content.html')
-
-
 import math, os
 import boto
 import boto.s3.connection
@@ -32,10 +23,7 @@ class rgw(object):
         self.bucketname = 'empty'
         self.dp = 'empty'
         self.inbucket = 0
-
-
-
-
+        
     def show_data(self,typ):
         """
         Show data of the class
@@ -140,30 +128,33 @@ class rgw(object):
         Upload files to a bucket
         (this function use FileChunkIO)
         '''
-        #Get file info
-        b = self.conn.get_bucket()
+        b = self.conn.get_bucket(self.bucketname)
         source_path = path
-        print("Uploading File "+source_path+" to bucket "+self.bucketname)
-        source_size = os.stat(source_path).st_size
-        # Create a multipart upload request
-        try:
-            mp = b.initiate_multipart_upload(os.path.basename(source_path))
+        
+        try:    
+            source_size = os.stat(source_path).st_size
         except FileNotFoundError:
             print("ERROR: File not Found")
             return
-        # Use a chunk size of 50 MiB
-        chunk_size = 52428800
-        chunk_count = int(math.ceil(source_size / float(chunk_size)))
-        # Send the file parts, using FileChunkIO to create a file-like object
-        # that points to a certain byte range within the original file. We
-        # set bytes to never exceed the original file size.
-        for i in range(chunk_count):
-            offset = chunk_size * i
-            bytes = min(chunk_size, source_size - offset)
-            with FileChunkIO(source_path, 'r', offset=offset,
-                             bytes=bytes) as fp:
-                mp.upload_part_from_file(fp, part_num=i + 1)
-        mp.complete_upload()
+        size_of_file = os.path.getsize(source_path)
+        if(size_of_file>1000000000):
+            print("FileChunkIO:\nChunk_size: "+str(chunk_size)+"\nChunks: "+str(chunk_count)+"\nUploading File "+source_path+" to bucket "+self.bucketname)
+            # Create a multipart upload request
+            mp = b.initiate_multipart_upload(os.path.basename(source_path))
+            # Use a chunk size of 50 MiB
+            chunk_size = 52428800
+            chunk_count = int(math.ceil(source_size / float(chunk_size)))
+            # Send the file parts, using FileChunkIO to create a file-like object
+            # that points to a certain byte range within the original file. We
+            # set bytes to never exceed the original file size.
+            for i in range(chunk_count):
+                print(str(chunk_count))
+                offset = chunk_size * i
+                bytes = min(chunk_size, source_size - offset)
+                with FileChunkIO(source_path, 'r', offset=offset,
+                                 bytes=bytes) as fp:
+                    mp.upload_part_from_file(fp, part_num=i + 1)
+            mp.complete_upload()
 
     def delete_object(self,o):
         '''
@@ -172,4 +163,4 @@ class rgw(object):
         bucket = self.conn.get_bucket(self.bucketname)
         for key in bucket.list():
             if key.name == o:
-key.delete()
+                key.delete()
