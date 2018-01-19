@@ -2,13 +2,22 @@
 # Eng.: Rafael Lazenhofer
 # Ver.: 2.0
 # Date: 12.01.2018
+
+def home(request):
+    return render(request, 'index.html')
+    #return HttpResponse ('home')
+
+def content(request):
+    return render(request, 'content.html')
+
+
 import math, os
 import boto
 import boto.s3.connection
 from boto.s3.key import Key
 from filechunkio import FileChunkIO
 class rgw(object):
- 
+
     def __init__ (self, access_key,secret_key, server):
         self.access_key = access_key
         self.secret_key = secret_key
@@ -23,7 +32,10 @@ class rgw(object):
         self.bucketname = 'empty'
         self.dp = 'empty'
         self.inbucket = 0
-    
+
+
+
+
     def show_data(self,typ):
         """
         Show data of the class
@@ -39,11 +51,10 @@ class rgw(object):
         elif typ == 2:
             var = "Bucket: "+self.bucketname+" Downloadpath: "+self.dp+" Bucketstatus: "+str(self.inbucket)
         else:
-            var = ("Access_key: "+self.access_key +" Secret_key: "+self.secret_key+" Host: "+self.server
-    	            " Bucket: "+self.bucketname+" Downloadpath: "+self.dp+" Bucketstatus: "+str(self.inbucket)
-        
-        return var.split() 
-        
+            var = ("Access_key: "+self.access_key +" Secret_key: "+self.secret_key+" Host: "+self.server+" Bucket: "+self.bucketname+" Downloadpath: "+self.dp+" Bucketstatus: "+str(self.inbucket))
+
+        return var.split()
+
 
     def lists(self):
         """
@@ -53,7 +64,7 @@ class rgw(object):
         """
         b=[]
         for bucket in self.conn.get_all_buckets():
-        b.append("{name} {created}".format(name = bucket.name, created = bucket.creation_date))
+            b.append("{name} {created}".format(name = bucket.name, created = bucket.creation_date))
         return b
 
     def create(self):
@@ -61,7 +72,7 @@ class rgw(object):
         This function create a bucket
         '''
         self.conn.create_bucket(self.bucketname)
-    
+
     def bn(self,bn):
 
         """
@@ -75,7 +86,7 @@ class rgw(object):
                 self.bucketname = bn
                 i=1
                 return 1
-        
+
         try:
              i
         except NameError:
@@ -90,12 +101,12 @@ class rgw(object):
         for key in bucketname:
             key.delete()
         self.conn.delete_bucket(bucketname)
-    
+
     def list_objects(self):
         '''
-        Lists the objects of an bucket 
+        Lists the objects of an bucket
         RETURN VALUE:
-            [object_name] [object_size] [modification_date] 
+            [object_name] [object_size] [modification_date]
         '''
         b=[]
         bucket = self.conn.get_bucket(self.bucketname)
@@ -161,8 +172,4 @@ class rgw(object):
         bucket = self.conn.get_bucket(self.bucketname)
         for key in bucket.list():
             if key.name == o:
-                key.delete()
-
-   
-            
-        
+key.delete()

@@ -13,10 +13,11 @@ Inhaltsverzeichnis
 
   * [RadosGW - Connector](#radosgw-connector)
     * [Erster Schritt](#erster_schritt)
+    * [Vorbereitung](#vorbereitung)
     * [Verwendung](#verwendung)
   * [RadosGW - Connector GUI](#radosgw-connector-gui)
   * [RadosGW - Connector Webinterface](#radosgw-connector-webinterface)
-  * [Vorbereitung](#vorbereitung)
+  
 
 Erster_Schritt
 =================
