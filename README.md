@@ -55,20 +55,24 @@ RadosGW - Connector
  - rm, delete a bucket
  - c, create a bucket
  - cd, get into a bucket
+ - bn, set a fix bucket name
 
  Object Functions:
- - space, make some space
+(This Functions can only be used if you are in a bucket!)
  - lo, list objects
  - mo, make an object
  - do, delete an object
  - u, upload to bucket
  - d, download from bucket
  - eb, get out of a bucket
+ - pl, make a publiclink
+ -rights, set the rights for a object
 
  Others:
  - h, help
  - space, make some space
  - showd, shows data of the user
+ - showl, shows your link logfile
  - downpath, set Downloadpath
  - e, exit
 >>>

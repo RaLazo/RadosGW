@@ -6,6 +6,8 @@ import os
 import math
 import boto
 import boto.s3.connection
+import datetime
+import time
 from boto.s3.key import Key
 from filechunkio import FileChunkIO
 
@@ -25,14 +27,37 @@ class rgw(object):
         self.dp = 'empty'
         self.inbucket = 0
 
-    '''
-     def public_link(self, object):
+    
+    def public_link(self, object):
         bucket = self.conn.get_bucket(self.bucketname)
         key = bucket.get_key(object)
         key.set_canned_acl('public-read')
-        url = key.generate_url(0, query_auth=False, force_http=True)
+        print("Do you want signed? [Y/N]:")
+        x=input()
+        if((x=='y')|(x=='Y')):
+            url = key.generate_url(3600, query_auth=True, force_http=True)
+        else:
+            url = key.generate_url(0, query_auth=False, force_http=True)
+        file = open("URL.txt","a")
+        file.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+"\t"+object+": "+url+"\n")
+        file.close()
         print(url)
-    '''
+
+    def rights_mangement(self,object,right):
+        bucket = self.conn.get_bucket(self.bucketname)
+        key = bucket.get_key(object)
+        if(right=="pr"):
+            key.set_canned_acl('private')
+        else:
+            key.set_canned_acl('public-read')
+        print("completed")
+
+    def showl(self):
+        file = open("URL.txt","r") 
+        string=file.read()
+        file.close()
+        print(string)
+
     def show_data(self):
         print("Access_key: "+self.access_key)
         print("Secret_key: "+self.secret_key)
@@ -53,7 +78,8 @@ class rgw(object):
 
     def __create(self):
         self.conn.create_bucket(self.bucketname)
-    
+        print("completed")
+
     def bn(self,bn,x):
         if x==1:      
             for bucket in self.conn.get_all_buckets():
@@ -79,6 +105,7 @@ class rgw(object):
                         key.delete()
                     self.conn.delete_bucket(bucket)
                     return
+        print("completed")
     
     def __list_objects(self):
         bucket = self.conn.get_bucket(self.bucketname)
@@ -93,6 +120,7 @@ class rgw(object):
         bucket = self.conn.get_bucket(self.bucketname)
         key = bucket.new_key(object_name)
         key.set_contents_from_string(object_content)
+        print("completed")
 
     def __downloader(self,object_name):
         b = self.conn.get_bucket(self.bucketname)
@@ -142,13 +170,8 @@ class rgw(object):
         for key in bucket.list():
             if key.name == o:
                 key.delete()
-    def bucket_checker(self):
-        if(self.inbucket != 1):
-            i = 0
-            print("You have to be in abucket for this function")
-        else:
-            i = 1
-        return i
+        print("completed")
+
     def switch(self,x):
         y=x.split()
         if len(x.split())>1:
@@ -157,35 +180,40 @@ class rgw(object):
                 if(y[0]=='cd'):
                     self.bn(y[1],1) 
             else:
-                self.bucketname = y[1]
-            if y[0] == 'mo':
-                if(self.bucket_checker()==1):
-                    self.__create_object(y[2],y[3])
-            elif y[0]=='lo':
-                if(self.bucket_checker()==1):
-                    self.__list_objects()
-            elif y[0]=='do':
-                if(self.bucket_checker()==1):
-                    self.__delete_object(y[1])
-            elif y[0]=='u':
-                if(self.bucket_checker()==1):
-                    self.__uploader(y[1])
-            elif y[0]=='d':
-                #try:
-                 #y[3]
-                #except NameError:
-                if self.dp == "empty":
-                    try:
-                        self.dp=y[2]
-                    except IndexError:
-                        print("ERROR: Invalid Downloadpath")
-                        
-                else:
-                    print("insert downpath")
+                self.bucketname = y[1]       
+            if(self.inbucket==1):
                 
-                self.__downloader(y[1])
+                if y[0] == 'mo':
+                    try:
+                        self.__create_object(y[1],y[2])
+                    except IndexError:
+                        print("mo [object_name] [content]")
+                
+                elif y[0]=='do':
+                    self.__delete_object(y[1])
+                
+                elif y[0]=='u':
+                    self.__uploader(y[1])
+                
+                elif y[0]=='pl':
+                    self.public_link(y[1])
+                elif y[0]=='rights':
+                    try:
+                        self.rights_mangement(y[1],y[2])
+                    except IndexError:
+                         print("rights [object_name] [rigth]\n pu for public-read\n pr for private")
+                elif y[0]=='d':
+                    
+                    if self.dp == "empty":
+                        try:
+                            self.dp=y[2]
+                        except IndexError:
+                            print("ERROR: Invalid Downloadpath")
+                    else:
+                        print("insert downpath")
+                    self.__downloader(y[1])
 
-            elif y[0] == 'downpath':
+            if y[0] == 'downpath':
                 self.dp=y[1]
             elif y[0] == 'rm':
                 self.__delete()
@@ -211,10 +239,12 @@ class rgw(object):
                 self.bucketname = "empty"
             elif x =='showd':
                 self.show_data()
+            elif x =='showl':
+                self.showl()
             elif x =='lo':
-                self.__list_objects()
+                if(self.inbucket==1):
+                    self.__list_objects()
             
-
 
     def h(self):
         print("\n Bucket Functions:")
@@ -224,16 +254,20 @@ class rgw(object):
         print(" - cd, get into a bucket")
         print(" - bn, set a fix bucket name")
         print("\n Object Functions:")
+        print("(This Functions can only be used if you are in a bucket!)")
         print(" - lo, list objects")
         print(" - mo, make an object")
         print(" - do, delete an object")
         print(" - u, upload to bucket")
         print(" - d, download from bucket")
         print(" - eb, get out of a bucket")
+        print(" - pl, make a publiclink")
+        print(" -rights, set the rights for a object")
         print("\n Others:")
         print(" - h, help")
         print(" - space, make some space")
         print(" - showd, shows data of the user")
+        print(" - showl, shows your link logfile")
         print(" - downpath, set Downloadpath")
         print(" - e, exit")
         

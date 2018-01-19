@@ -23,7 +23,42 @@ class rgw(object):
         self.bucketname = 'empty'
         self.dp = 'empty'
         self.inbucket = 0
-        
+
+    def public_link(self, object,rights,vality):
+        '''
+        make a public link to an object
+        rights:
+        1 . . . . Signlink
+        2 . . . . normallink
+        vality:
+        in sec. Example: 3600s = 60min
+        '''
+        bucket = self.conn.get_bucket(self.bucketname)
+        key = bucket.get_key(object)
+        key.set_canned_acl('public-read')
+        if(x==1):
+            url = key.generate_url(vality, query_auth=True, force_http=True)
+        else:
+            url = key.generate_url(vality, query_auth=False, force_http=True)
+        '''
+        file = open("URL.txt","a")
+        file.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+"\t"+object+": "+url+"\n")
+        file.close()
+        '''
+    def rights_mangement(self,object,right):
+        '''
+        Set the rights of an object
+        rights:
+        1 . . . . private
+        2 . . . . public
+        '''
+        bucket = self.conn.get_bucket(self.bucketname)
+        key = bucket.get_key(object)
+        if(right=="1"):
+            key.set_canned_acl('private')
+        else:
+            key.set_canned_acl('public-read') 
+
     def show_data(self,typ):
         """
         Show data of the class
