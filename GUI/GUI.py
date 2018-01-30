@@ -3,7 +3,11 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 <<<<<<< HEAD
+<<<<<<< HEAD
 #from rgwclass2 import rgw
+=======
+from rgwclass2 import rgw
+>>>>>>> parent of 9ac29b9... ReBranding
 =======
 from rgwclass2 import rgw
 >>>>>>> parent of 9ac29b9... ReBranding
