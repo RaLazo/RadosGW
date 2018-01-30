@@ -3,9 +3,11 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 #from rgwclass2 import rgw
-
-
-class gui_branding(QMainWindow,QTabWidget):
+from messagebox import popup
+import ctypes
+myappid = 'mycompany.myproduct.subproduct.version' # arbitrary string
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+class gui_branding(QMainWindow,QTabWidget,popup):
     
     def helpdesk(self):
         self.docked = QDockWidget("HelpDesk", self)
@@ -47,10 +49,16 @@ class gui_branding(QMainWindow,QTabWidget):
         layout.addRow(l1)
         layout.addRow(l2)
         layout.addRow(l3)
+        button1 = QPushButton('Downloadpath',self)
+        button1.setToolTip('set the Downloadpath')
+        button1.clicked.connect(self.downpath)
+        layout.addRow(button1)
+        
         # Optional, resize window to image size
         self.resize(pixmap.width(),pixmap.height())
         self.tab1.setLayout(layout)
-
+    def downpath(self):
+        self.www=popup()
     def tab_2(self):
         layout = QFormLayout()
         layout.addRow("Searching",QLineEdit())
@@ -61,10 +69,10 @@ class gui_branding(QMainWindow,QTabWidget):
         layout = QFormLayout()
         layout.addRow("Searching",QLineEdit())
         self.tab3.setLayout(layout)
-        
+
     def window(self):
         self.setWindowTitle("Rados Gateway Connector")
-        self.setWindowIcon(QIcon("icon/cloud.svg"))
+        self.setWindowIcon(QIcon("icon/RGWC_small.PNG"))
         self.setFixedSize(700,500)
 
     def set_menubar(self):

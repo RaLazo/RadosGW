@@ -8,7 +8,9 @@ from graphic import gui_branding
 class RGWC(gui_branding,QMainWindow,QTabWidget):
 
     def __init__(self):
+        
         super().__init__()
+        self.window()
         self.init()
     
     def init(self):  
@@ -19,7 +21,7 @@ class RGWC(gui_branding,QMainWindow,QTabWidget):
         #pixmap = QPixmap('RGWC.PNG')
         #label.setPixmap(pixmap)
         self.docked.setWidget(self.tabs)
-        self.window()
+        
         self.statusBar().showMessage('STATE: Programm running . . .')
         self.set_menubar()
         self.set_actions()
@@ -29,5 +31,3 @@ class RGWC(gui_branding,QMainWindow,QTabWidget):
 app = QApplication(sys.argv)
 w=RGWC()
 sys.exit(app.exec_())
-
-
