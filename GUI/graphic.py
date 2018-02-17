@@ -235,19 +235,22 @@ class Account_Popup(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(100, 200, 100, 100)
+        self.setGeometry(100, 200, 300, 300)
         self.setWindowTitle("Account")
         self.setWindowIcon(QIcon("icon/account.svg"))
         layout = QFormLayout()
         l1 = QLabel() 
         label = QLabel(self)
-        pixmap = QPixmap('icon/small_RGWC.PNG')
+        pixmap = QPixmap('icon/account.svg')
         label.setPixmap(pixmap)
         label.setAlignment(Qt.AlignCenter)
         l1.setAlignment(Qt.AlignCenter)
         l1.setText("Welcome to\nRados Gateway Connector\nDesktop - Client")
         l1.setFont(QFont("Calibri", 11, QFont.Bold))
+        layout.addRow(label)
+        layout.addRow(l1)
         self.setLayout(layout)
+        self.addAction()
         self.show()
        
 
