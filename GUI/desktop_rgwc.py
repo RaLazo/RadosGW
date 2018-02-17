@@ -5,6 +5,7 @@ from PyQt5.QtCore import *
 #from rgwclass2 import rgw
 from graphic import gui_branding
 
+
 class RGWC(gui_branding,QMainWindow,QTabWidget):
 
     def __init__(self):
@@ -29,4 +30,3 @@ class RGWC(gui_branding,QMainWindow,QTabWidget):
 app = QApplication(sys.argv)
 w=RGWC()
 sys.exit(app.exec_())
-

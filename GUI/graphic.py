@@ -2,13 +2,24 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-#from rgwclass2 import rgw
+#from popup import Pop
+from rgwclass2 import rgw
 import ctypes
 myappid = 'mycompany.myproduct.subproduct.version' # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
+
+
 class gui_branding(QMainWindow,QTabWidget):
     
+    def __init__(self):
+        super().__init__()
+        file = open("../UserData.txt","r") 
+        string=file.read()
+        string=string.split("\n")    
+        self.r=rgw(string[0],string[1],string[2])
+        self.check = []
+
     def helpdesk(self):
         self.docked = QDockWidget("HelpDesk", self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.docked)
@@ -28,46 +39,77 @@ class gui_branding(QMainWindow,QTabWidget):
     
     def tab_1(self):
         layout = QFormLayout()
-        label = QLabel()
-        pixmap = QPixmap('icon/RGWC_small.PNG')
+        l1 = QLabel() 
+        label = QLabel(self)
+        pixmap = QPixmap('icon/small_RGWC.PNG')
         label.setPixmap(pixmap)
         label.setAlignment(Qt.AlignCenter)
-        l1 = QLabel()
-        l2 = QLabel()
-        l3 = QLabel()
-        l4 = QLabel()    
         l1.setAlignment(Qt.AlignCenter)
-        l2.setAlignment(Qt.AlignCenter)
-        l3.setAlignment(Qt.AlignCenter)
-        l1.setText("Welcome to")
-        l2.setText("Rados Gateway Connector")
-        l3.setText("Desktop - Client")
-        l1.setFont(QFont("Calibri", 15, QFont.Bold))
-        l2.setFont(QFont("Calibri", 10, QFont.Bold))
-        l3.setFont(QFont("Calibri", 10, QFont.Bold))
+        l1.setText("Welcome to\nRados Gateway Connector\nDesktop - Client")
+        l1.setFont(QFont("Calibri", 11, QFont.Bold))
+        downbutton=QPushButton("set Downloadpath",self)
+        downbutton.clicked.connect(self.downpath)
         layout.addRow(label)
         layout.addRow(l1)
-        layout.addRow(l2)
-        layout.addRow(l3)
+        layout.addRow(downbutton)
         # Optional, resize window to image size
-        self.resize(pixmap.width(),pixmap.height())
         self.tab1.setLayout(layout)
-
+    
+    def downpath(self):
+        dialog = QFileDialog()
+        self.folder_path = dialog.getExistingDirectory(None, "Select Folder")
+        
     def tab_2(self):
         layout = QFormLayout()
+        button_layout=QHBoxLayout()
+        bucket_button=QPushButton("Search",self)
+        bucket_button_show=QPushButton("Show all",self)
+        button_layout.addWidget(bucket_button)
+        button_layout.addWidget(bucket_button_show)
+        bucket_button_show.clicked.connect(lambda: self.set_table(self.r.lists()))
         layout.addRow("Searching",QLineEdit())
-        [layout.addWidget(QRadioButton("bucket"+str(i),self.tab2)) for i in range(10)]
+        layout.addRow(button_layout)
+        mygroupbox = QGroupBox('Your Buckets')
+        myform = QFormLayout()
+        k = []
+        b=self.r.lists()
+        for i in range(len(b)):
+            k.append(b[i].split()[0])
+        i=0
+        Radiobutton = []
+        for i in range(len(k)):
+            Radiobutton.append(QRadioButton(k[i]))
+            Radiobutton[i].clicked.connect(lambda:self.radio(Radiobutton))
+            myform.addRow(Radiobutton[i])
+        mygroupbox.setLayout(myform)
+        scroll = QScrollArea()
+        scroll.setWidget(mygroupbox)
+        scroll.setWidgetResizable(True)
+        layout.addWidget(scroll)
         self.tab2.setLayout(layout)
     
+    def radio(self, rb):
+        for i in range(len(rb)):
+            if str(rb[i].isChecked()) == "True":
+               self.r.bn(rb[i].text())
+               self.set_table(self.r.list_objects())
+
     def tab_3(self):
         layout = QFormLayout()
         layout.addRow("Searching",QLineEdit())
+        button_layout=QHBoxLayout()
+        button_layout=QHBoxLayout()
+        bucket_button=QPushButton("Search",self)
+        bucket_button_mark=QPushButton("Mark all",self)
+        button_layout.addWidget(bucket_button)
+        button_layout.addWidget(bucket_button_mark)
+        layout.addRow(button_layout)
         self.tab3.setLayout(layout)
         
     def window(self):
         self.setWindowTitle("Rados Gateway Connector")
         self.setWindowIcon(QIcon("icon/RGWC.PNG"))
-        self.setFixedSize(700,500)
+        self.setGeometry(100,100,800,500)
 
     def set_menubar(self):
         self.menubar = self.menuBar()
@@ -75,6 +117,11 @@ class gui_branding(QMainWindow,QTabWidget):
         self.option = self.menubar.addMenu('&Options')
         self.help = self.menubar.addMenu('&Help')
     
+    def set_optinon(self):
+        self.helpdesk.setShortcut('CTRL+H')
+        self.helpdesk.triggered.connect(self.helpdesk_back)
+        self.option.addAction(self.helpdesk)
+
     def set_exit_function(self):
         self.exitMe.setShortcut('Ctrl+E')
         self.exitMe.triggered.connect(self.close)
@@ -88,6 +135,14 @@ class gui_branding(QMainWindow,QTabWidget):
     def delete_something(self):
         self.delete.setShortcut('CTRL+B')
         self.delete.triggered.connect(self.delete_window)
+    
+    def set_account(self):
+        self.account.setShortcut('CTRL+A')
+        self.account.triggered.connect(self.account_data)
+        self.file.addAction(self.account)
+    
+    def account_data(self):
+        self.popup=Account_Popup()
 
     def set_actions(self):
         self.exitMe = QAction(QIcon('icon/exit.svg'),'&Exit',self)
@@ -98,8 +153,11 @@ class gui_branding(QMainWindow,QTabWidget):
         self.private = QAction(QIcon('icon/private.svg'),'&Private',self)
         self.account = QAction(QIcon('icon/account.svg'),'&Account',self)
         self.create = QAction(QIcon('icon/create.svg'),'&Create',self)
+        self.helpdesk = QAction(QIcon("icon/option.svg"),'&Helpdesk',self)
         self.set_exit_function()
         self.set_help_function()
+        self.set_optinon()
+        self.set_account()
 
     def set_toolbar(self):
         self.toolbarbucket = self.addToolBar('Tools')
@@ -109,12 +167,12 @@ class gui_branding(QMainWindow,QTabWidget):
         self.toolbarbucket.addAction(self.create)
         self.toolbarbucket.addAction(self.upload)
         self.toolbarbucket.addAction(self.download)
-        self.toolbarbucket.addAction(self.private)
-        self.toolbarbucket.addAction(self.public)
+        #self.toolbarbucket.addAction(self.private)
+        #self.toolbarbucket.addAction(self.public)
         self.delete_something()
 
-    def checkbox_clicked(self, checked):
-        print(checked)
+    def checkbox_clicked(self, box):
+        print(box.text())
 
     def ged(self):
         self.sender().move(200,200)# Sender ist theoretisch der Button
@@ -131,30 +189,35 @@ class gui_branding(QMainWindow,QTabWidget):
             QMessageBox.warning(self, 'Open Url', 'Could not open url')
 
     def delete_window(self):
-        choice = QMessageBox.question(self,'Delte a Bucket','Are you sure ?',QMessageBox.Yes | QMessageBox.No)
+        print(self.check)
+        choice = QMessageBox.question(self,'garbage can','Are you sure ?',QMessageBox.Yes | QMessageBox.No)
         if choice == QMessageBox.Yes:
             sys.exit()
         else:
             pass
-
+    def helpdesk_back(self):
+        self.docked.setWidget(self.tabs)
+        
     def table(self):
-        b=['object date','object date','object date','object date','object date','object date','object date','object date','object date','object date']
         self.table = QTableWidget() 
+        header = self.table.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.ResizeToContents)
         self.setCentralWidget(self.table)
-        [self.table.insertRow(i) for i in range(len(b))]
         [self.table.insertColumn(i) for i in [0,1,2]]
         width = self.table.verticalHeader().width()
-        width += self.table.horizontalHeader().length()
-        if self.table.verticalScrollBar().isVisible():
-            width += self.table.verticalScrollBar().width()
-        width += self.table.frameWidth() * 30
-        self.table.setFixedWidth(width)
+        width += self.table.horizontalHeader().length()+100
+    
+    def set_table(self,b):
+        del self.table
+        self.table()
         a=[]
-        y=[]
+        [self.table.insertRow(i) for i in range(len(b))]
+        
+        x = []
         for i in range(len(b)):
-            del y[:]
-            y=b[i].split()
-            a.append(QCheckBox( parent=self.table ))
+            x.append(b[i].split()[0])
+            y=b[i].split()[1]
+            a.append(QCheckBox(str(i),parent=self.table))
             self.table.setCellWidget(i, 0, a[i])
             a[i].clicked.connect(lambda: self.checker(a,x))
             self.table.setItem(i, 1, QTableWidgetItem(x[i]))
@@ -172,22 +235,17 @@ class Account_Popup(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(100, 200, 300, 300)
+        self.setGeometry(100, 200, 100, 100)
         self.setWindowTitle("Account")
         self.setWindowIcon(QIcon("icon/account.svg"))
         layout = QFormLayout()
         l1 = QLabel() 
         label = QLabel(self)
-        pixmap = QPixmap('icon/account.svg')
+        pixmap = QPixmap('icon/small_RGWC.PNG')
         label.setPixmap(pixmap)
         label.setAlignment(Qt.AlignCenter)
         l1.setAlignment(Qt.AlignCenter)
         l1.setText("Welcome to\nRados Gateway Connector\nDesktop - Client")
         l1.setFont(QFont("Calibri", 11, QFont.Bold))
-        layout.addRow(label)
-        layout.addRow(l1)
         self.setLayout(layout)
-        self.addAction()
         self.show()
-       
-
