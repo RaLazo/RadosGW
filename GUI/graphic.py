@@ -156,9 +156,6 @@ class gui_branding(QMainWindow,QTabWidget):
             y=b[i].split()
             a.append(QCheckBox( parent=self.table ))
             self.table.setCellWidget(i, 0, a[i])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
             a[i].clicked.connect(lambda: self.checker(a,x))
             self.table.setItem(i, 1, QTableWidgetItem(x[i]))
             self.table.setItem(i, 2, QTableWidgetItem(y))
@@ -194,19 +191,3 @@ class Account_Popup(QWidget):
         self.show()
        
 
-    
-=======
-            a[i].clicked.connect(self.checkbox_clicked)
-            self.table.setItem(i, 1, QTableWidgetItem(y[0]))
-            self.table.setItem(i, 2, QTableWidgetItem(y[1]))
->>>>>>> parent of 3035c31... Adepting Account
-=======
-            a[i].clicked.connect(self.checkbox_clicked)
-            self.table.setItem(i, 1, QTableWidgetItem(y[0]))
-            self.table.setItem(i, 2, QTableWidgetItem(y[1]))
->>>>>>> parent of 3035c31... Adepting Account
-=======
-            a[i].clicked.connect(self.checkbox_clicked)
-            self.table.setItem(i, 1, QTableWidgetItem(y[0]))
-            self.table.setItem(i, 2, QTableWidgetItem(y[1]))
->>>>>>> parent of 3035c31... Adepting Account
