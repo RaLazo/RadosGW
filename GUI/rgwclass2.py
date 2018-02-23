@@ -36,7 +36,7 @@ class rgw(object):
         bucket = self.conn.get_bucket(self.bucketname)
         key = bucket.get_key(object)
         key.set_canned_acl('public-read')
-        if(x==1):
+        if rights==1:
             url = key.generate_url(vality, query_auth=True, force_http=True)
         else:
             url = key.generate_url(vality, query_auth=False, force_http=True)
@@ -134,10 +134,11 @@ class rgw(object):
         b=[]
         bucket = self.conn.get_bucket(self.bucketname)
         for key in bucket.list():
-            b.append("{name} {size} {modified}".format(
+            b.append("{name} {size} {modified} {acl}".format(
                     name = key.name,
                     size = key.size,
                     modified = key.last_modified,
+                    acl = bucket.get_acl(key.name) 
                     ))
         return b
 
@@ -154,9 +155,9 @@ class rgw(object):
         Downloads an object from an bucket
         '''
         b = self.conn.get_bucket(self.bucketname)
-        print("Downloading Object "+object_name+" to Directory "+self.dp+object_name)
+        #print("Downloading Object "+object_name+" to Directory "+"\\"+self.dp+object_name)
         key = b.get_key(object_name)
-        key.get_contents_to_filename(self.dp+object_name)
+        key.get_contents_to_filename(self.dp+"\\"+object_name)
 
     def uploader(self,path):
         '''
@@ -165,7 +166,7 @@ class rgw(object):
         '''
         b = self.conn.get_bucket(self.bucketname)
         source_path = path
-        
+
         try:    
             source_size = os.stat(source_path).st_size
         except FileNotFoundError:
@@ -173,7 +174,7 @@ class rgw(object):
             return
         size_of_file = os.path.getsize(source_path)
         if(size_of_file>1000000000):
-            print("FileChunkIO:\nChunk_size: "+str(chunk_size)+"\nChunks: "+str(chunk_count)+"\nUploading File "+source_path+" to bucket "+self.bucketname)
+            #print("FileChunkIO:\nChunk_size: "+str(chunk_size)+"\nChunks: "+str(chunk_count)+"\nUploading File "+source_path+" to bucket "+self.bucketname)
             # Create a multipart upload request
             mp = b.initiate_multipart_upload(os.path.basename(source_path))
             # Use a chunk size of 50 MiB
@@ -190,6 +191,12 @@ class rgw(object):
                                  bytes=bytes) as fp:
                     mp.upload_part_from_file(fp, part_num=i + 1)
             mp.complete_upload()
+        else:
+            #print("Uploading File "+source_path+" to bucket "+self.bucketname)
+            k = Key(b)
+            paths=path.split("/")
+            k.key = paths[len(paths)-1] 
+            k.set_contents_from_filename(path)
 
     def delete_object(self,o):
         '''

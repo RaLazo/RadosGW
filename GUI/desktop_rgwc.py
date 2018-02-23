@@ -13,7 +13,7 @@ class RGWC(gui_branding,QMainWindow,QTabWidget):
         self.init()
     
     def init(self):  
-        self.table()  
+        self.table(3)  
         self.helpdesk()
         self.tabs()
         #label = QLabel(self)
