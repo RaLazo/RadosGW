@@ -2,8 +2,8 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from account_popup import Account_Popup
-from create_popup import Create_Popup
+from popup import Account_Popup
+from popup import Create_Popup
 from rgwclass2 import rgw
 import ctypes
 myappid = 'mycompany.myproduct.subproduct.version' # arbitrary string
@@ -22,11 +22,14 @@ class gui_branding(QMainWindow,QTabWidget):
         self.r=rgw(string[0],string[1],string[2])
         self.r.dp=string[3]
         self.check = []
-
-    def helpdesk(self):
+        self.checkb = []
+        self.checkx = []
+    
+    def set_helpdesk(self):
         self.docked = QDockWidget("HelpDesk", self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.docked)
         self.dockedWidget = QWidget(self)
+        self.docked.setWidget(self.tabs)
 
     def tabs(self):
         self.tabs = QTabWidget()
@@ -34,11 +37,9 @@ class gui_branding(QMainWindow,QTabWidget):
         self.tab2 = QWidget()
         self.tab3 = QWidget()
         self.tabs.addTab(self.tab1,"RGWC")
-        self.tabs.addTab(self.tab2,"Buckets")
-        self.tabs.addTab(self.tab3,"Objects")
+        self.tabs.addTab(self.tab2,"Tools")
         self.tab_1()
         self.tab_2()
-        self.tab_3()
     
     def tab_1(self):
         layout = QFormLayout()
@@ -81,37 +82,41 @@ class gui_branding(QMainWindow,QTabWidget):
     def tab_2(self):
         layout = QFormLayout()
         button_layout=QHBoxLayout()
-        bucket_button=QPushButton("Search",self)
-        bucket_button_show=QPushButton("Show all",self)
+        setext=QLabel()
+        setext.setText("Search for an Object")
+        bucket_button=QPushButton("Mark all",self)
+        bucket_button_show=QPushButton("Show the Buckets",self)
         button_layout.addWidget(bucket_button)
         button_layout.addWidget(bucket_button_show)
         bucket_button_show.clicked.connect(lambda: self.set_table(self.r.lists()))
         bucket_button_show.clicked.connect(self.set_bucket_groupbox)
-        layout.addRow("Searching",QLineEdit())
-        layout.addRow(button_layout)
+        bucket_button.clicked.connect(self.set_check)
+        self.searchbox = QLineEdit()
+        self.searchbox.textChanged.connect(self.textchange)
+        layout.addRow(setext)
+        layout.addRow(self.searchbox)
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
         self.set_bucket_groupbox()
         layout.addWidget(self.scroll)
+        layout.addRow(button_layout)
         self.tab2.setLayout(layout)
     
+    def textchange(self):
+        help_array = []
+        help = self.r.list_objects()
+        for i in range(len(help)): 
+            if str(self.searchbox.text()) in help[i]:
+                help_array.append(help[i])
+        self.set_table(help_array)
+
+
     def radio(self, rb):
         for i in range(len(rb)):
             if str(rb[i].isChecked()) == "True":
                self.r.bn(rb[i].text())
                self.set_table(self.r.list_objects())
 
-    def tab_3(self):
-        layout = QFormLayout()
-        layout.addRow("Searching",QLineEdit())
-        button_layout=QHBoxLayout()
-        button_layout=QHBoxLayout()
-        bucket_button=QPushButton("Search",self)
-        bucket_button_mark=QPushButton("Mark all",self)
-        button_layout.addWidget(bucket_button)
-        button_layout.addWidget(bucket_button_mark)
-        layout.addRow(button_layout)
-        self.tab3.setLayout(layout)
         
     def window(self):
         self.setWindowTitle("Rados Gateway Connector")
@@ -142,7 +147,6 @@ class gui_branding(QMainWindow,QTabWidget):
     def delete_something(self):
         self.delete.setShortcut('CTRL+R')
         self.delete.triggered.connect(self.delete_window)
-        self.option.addAction(self.delete)
     
     def closeit(self):
         self.close()
@@ -164,38 +168,17 @@ class gui_branding(QMainWindow,QTabWidget):
     def set_create(self):
         self.create.setShortcut('CTRL+C')
         self.create.triggered.connect(self.create_something)
-        self.option.addAction(self.create)
+        self.file.addAction(self.create)
     
     def set_upload(self):
         self.upload.setShortcut('CTRL+U')
         self.upload.triggered.connect(self.openFileNamesDialog)
-        self.option.addAction(self.upload)
+        self.file.addAction(self.upload)
     
     def set_download(self):
         self.download.setShortcut('CTRL+D')
         self.download.triggered.connect(self.download_something)
-        self.option.addAction(self.download)
-
-    def set_rights(self):
-        self.public.setShortcut("CTRL+P")
-        self.private.setShortcut("CTRL+V")
-        self.public.triggered.connect(lambda: self.right(0))
-        self.private.triggered.connect(lambda: self.right(1))
-        self.option.addAction(self.public)
-        self.option.addAction(self.private)
-    
-    def right(self, right):
-        
-        self.statusBar().showMessage('STATUS: Chaning Permissions . . . ')
-        if right == 1: 
-            for i in range(len(self.check)):
-                self.r.rights_mangement(self.check[i],1)
-        else:
-             for i in range(len(self.check)):
-                self.r.rights_mangement(self.check[i],0)
-        self.set_table(self.r.list_objects())     
-        self.statusBar().showMessage('STATUS: Completed')       
-
+        self.file.addAction(self.download)
 
     def download_something(self):
         self.statusBar().showMessage('STATUS: Downloading . . .')
@@ -209,9 +192,9 @@ class gui_branding(QMainWindow,QTabWidget):
     
     def account_data(self):
         self.popup_a=Account_Popup()
-        
-
+     
     def openFileNamesDialog(self):   
+        self.statusBar().showMessage('STATUS: Starting Upload . . . ')
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         files, _ = QFileDialog.getOpenFileNames(self,"Upload your Data", "","All Files (*);;Python Files (*.py)", options=options)
@@ -219,6 +202,7 @@ class gui_branding(QMainWindow,QTabWidget):
             for i in range(len(files)):
                 self.r.uploader(files[i])
             self.set_table(self.r.list_objects())
+        self.statusBar().showMessage('STATUS: Completed ')
 
     
     def set_actions(self):
@@ -238,7 +222,6 @@ class gui_branding(QMainWindow,QTabWidget):
         self.set_create()
         self.set_upload()
         self.set_download()
-        self.set_rights()
 
     def set_toolbar(self):
         self.toolbarbucket = self.addToolBar('Tools')
@@ -261,6 +244,7 @@ class gui_branding(QMainWindow,QTabWidget):
             QMessageBox.warning(self, 'Open Url', 'Could not open url')
 
     def delete_window(self):
+        self.statusBar().showMessage('STATUS: Start remove of  . . . ')
         choice = QMessageBox.question(self,'garbage can','Are you sure ?',QMessageBox.Yes | QMessageBox.No)
         if choice == QMessageBox.Yes:
             if self.r.bucketname != "empty":
@@ -283,8 +267,10 @@ class gui_branding(QMainWindow,QTabWidget):
             self.r.bucketname = "empty"
         else:
             pass
+        self.statusBar().showMessage('STATUS: Completed ')
     def helpdesk_back(self):
-        self.docked.setWidget(self.tabs)
+        del self.docked
+        self.set_helpdesk()
         
     def table(self,colums):
         self.table = QTableWidget() 
@@ -297,6 +283,7 @@ class gui_branding(QMainWindow,QTabWidget):
     
     def set_table(self,b):
         del self.table
+        del self.checkb [:]
         self.table(5)
         object=1
         try:
@@ -305,10 +292,11 @@ class gui_branding(QMainWindow,QTabWidget):
             object=0
             del self.table
             self.table(3)
-        a=[]
+
         [self.table.insertRow(i) for i in range(len(b))]
-        
+        a = []
         x = []
+        q = []
         for i in range(len(b)):
             x.append(b[i].split()[0])
             y=b[i].split()[1]
@@ -318,16 +306,26 @@ class gui_branding(QMainWindow,QTabWidget):
             self.table.setItem(i, 1, QTableWidgetItem(x[i]))
             self.table.setItem(i, 2, QTableWidgetItem(y))
             if object == 1:
-               z=b[i].split()[2]
                q=b[i].split()[3]
+               z=b[i].split()[2]
                self.table.setItem(i,3,QTableWidgetItem(z))
                self.table.setItem(i,4,QTableWidgetItem(q))
+        self.checkx = x
+        self.checkb = a
 
     def checker(self,a,x):
         del self.check[:]
         for i in range(len(a)):
-            if str(a[i].isChecked())=="True":
+            if a[i].isChecked()== True:
                 self.check.append(x[i])
+
+    def set_check(self):
+        for i in range (len(self.checkb)):
+            if self.checkb[i].isChecked() == True:
+                self.checkb[i].setChecked(False)
+            else:
+                self.checkb[i].setChecked(True)
+        self.checker(self.checkb, self.checkx)
 
 
            

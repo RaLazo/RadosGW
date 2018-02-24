@@ -14,12 +14,11 @@ class RGWC(gui_branding,QMainWindow,QTabWidget):
     
     def init(self):  
         self.table(3)  
-        self.helpdesk()
         self.tabs()
+        self.set_helpdesk()
         #label = QLabel(self)
         #pixmap = QPixmap('RGWC.PNG')
         #label.setPixmap(pixmap)
-        self.docked.setWidget(self.tabs)
         self.window()
         self.statusBar().showMessage('STATE: Programm running . . .')
         self.set_menubar()
