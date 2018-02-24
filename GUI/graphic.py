@@ -142,6 +142,7 @@ class gui_branding(QMainWindow,QTabWidget):
     def delete_something(self):
         self.delete.setShortcut('CTRL+R')
         self.delete.triggered.connect(self.delete_window)
+        self.option.addAction(self.delete)
     
     def closeit(self):
         self.close()
@@ -163,17 +164,38 @@ class gui_branding(QMainWindow,QTabWidget):
     def set_create(self):
         self.create.setShortcut('CTRL+C')
         self.create.triggered.connect(self.create_something)
-        self.file.addAction(self.create)
+        self.option.addAction(self.create)
     
     def set_upload(self):
         self.upload.setShortcut('CTRL+U')
         self.upload.triggered.connect(self.openFileNamesDialog)
-        self.file.addAction(self.upload)
+        self.option.addAction(self.upload)
     
     def set_download(self):
         self.download.setShortcut('CTRL+D')
         self.download.triggered.connect(self.download_something)
-        self.file.addAction(self.download)
+        self.option.addAction(self.download)
+
+    def set_rights(self):
+        self.public.setShortcut("CTRL+P")
+        self.private.setShortcut("CTRL+V")
+        self.public.triggered.connect(lambda: self.right(0))
+        self.private.triggered.connect(lambda: self.right(1))
+        self.option.addAction(self.public)
+        self.option.addAction(self.private)
+    
+    def right(self, right):
+        
+        self.statusBar().showMessage('STATUS: Chaning Permissions . . . ')
+        if right == 1: 
+            for i in range(len(self.check)):
+                self.r.rights_mangement(self.check[i],1)
+        else:
+             for i in range(len(self.check)):
+                self.r.rights_mangement(self.check[i],0)
+        self.set_table(self.r.list_objects())     
+        self.statusBar().showMessage('STATUS: Completed')       
+
 
     def download_something(self):
         self.statusBar().showMessage('STATUS: Downloading . . .')
@@ -187,7 +209,8 @@ class gui_branding(QMainWindow,QTabWidget):
     
     def account_data(self):
         self.popup_a=Account_Popup()
-     
+        
+
     def openFileNamesDialog(self):   
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -215,6 +238,7 @@ class gui_branding(QMainWindow,QTabWidget):
         self.set_create()
         self.set_upload()
         self.set_download()
+        self.set_rights()
 
     def set_toolbar(self):
         self.toolbarbucket = self.addToolBar('Tools')
@@ -273,7 +297,7 @@ class gui_branding(QMainWindow,QTabWidget):
     
     def set_table(self,b):
         del self.table
-        self.table(4)
+        self.table(5)
         object=1
         try:
             b[1].split()[2]
@@ -285,11 +309,9 @@ class gui_branding(QMainWindow,QTabWidget):
         [self.table.insertRow(i) for i in range(len(b))]
         
         x = []
-        print(b[4])
         for i in range(len(b)):
             x.append(b[i].split()[0])
             y=b[i].split()[1]
-            #q=b[i].split()[3]
             a.append(QCheckBox(str(i),parent=self.table))
             self.table.setCellWidget(i, 0, a[i])
             a[i].clicked.connect(lambda: self.checker(a,x))
@@ -297,8 +319,9 @@ class gui_branding(QMainWindow,QTabWidget):
             self.table.setItem(i, 2, QTableWidgetItem(y))
             if object == 1:
                z=b[i].split()[2]
+               q=b[i].split()[3]
                self.table.setItem(i,3,QTableWidgetItem(z))
-            #self.table.setItem(i,4,QTableWidgetItem(q))
+               self.table.setItem(i,4,QTableWidgetItem(q))
 
     def checker(self,a,x):
         del self.check[:]

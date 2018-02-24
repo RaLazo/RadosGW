@@ -54,7 +54,7 @@ class rgw(object):
         '''
         bucket = self.conn.get_bucket(self.bucketname)
         key = bucket.get_key(object)
-        if(right=="1"):
+        if right == 1:
             key.set_canned_acl('private')
         else:
             key.set_canned_acl('public-read') 
@@ -134,11 +134,16 @@ class rgw(object):
         b=[]
         bucket = self.conn.get_bucket(self.bucketname)
         for key in bucket.list():
+            if(len(str(key.get_acl()))== 42):
+                rigth = "Privat"
+            else:
+                rigth="Public"
+            
             b.append("{name} {size} {modified} {acl}".format(
                     name = key.name,
                     size = key.size,
                     modified = key.last_modified,
-                    acl = bucket.get_acl(key.name) 
+                    acl = rigth,
                     ))
         return b
 
