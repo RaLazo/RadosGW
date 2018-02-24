@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from popup import Account_Popup
-from popup import Create_Popup
 from rgwclass2 import rgw
 import ctypes
 myappid = 'mycompany.myproduct.subproduct.version' # arbitrary string
@@ -83,18 +82,24 @@ class gui_branding(QMainWindow,QTabWidget):
         layout = QFormLayout()
         button_layout=QHBoxLayout()
         setext=QLabel()
-        setext.setText("Search for an Object")
+        cetext=QLabel()
         bucket_button=QPushButton("Mark all",self)
         bucket_button_show=QPushButton("Show the Buckets",self)
+        self.searchbox = QLineEdit()
+        self.cb = QLineEdit()
+        setext.setText("Search for an Object")
+        cetext.setText("Create a Bucket")
         button_layout.addWidget(bucket_button)
         button_layout.addWidget(bucket_button_show)
         bucket_button_show.clicked.connect(lambda: self.set_table(self.r.lists()))
         bucket_button_show.clicked.connect(self.set_bucket_groupbox)
         bucket_button.clicked.connect(self.set_check)
-        self.searchbox = QLineEdit()
+        self.cb.editingFinished.connect(self.createbucket)
         self.searchbox.textChanged.connect(self.textchange)
         layout.addRow(setext)
         layout.addRow(self.searchbox)
+        layout.addRow(cetext)
+        layout.addRow(self.cb)
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
         self.set_bucket_groupbox()
@@ -102,6 +107,15 @@ class gui_branding(QMainWindow,QTabWidget):
         layout.addRow(button_layout)
         self.tab2.setLayout(layout)
     
+    def createbucket(self):
+        if ((self.r.bn(self.cb.text()) == 0) and (self.cb.text()!="")):
+            self.r.bucketname=self.cb.text()
+            self.r.create()
+            self.set_table(self.r.lists())
+            self.set_bucket_groupbox()
+            self.cb.setText("")
+
+
     def textchange(self):
         help_array = []
         help = self.r.list_objects()
@@ -154,21 +168,12 @@ class gui_branding(QMainWindow,QTabWidget):
             self.popup_a.close()
         except AttributeError:
             pass
-        try:
-            self.popup_c.close()
-        except AttributeError:
-            pass
         
 
     def set_account(self):
         self.account.setShortcut('CTRL+A')
         self.account.triggered.connect(self.account_data)
         self.file.addAction(self.account)
-    
-    def set_create(self):
-        self.create.setShortcut('CTRL+C')
-        self.create.triggered.connect(self.create_something)
-        self.file.addAction(self.create)
     
     def set_upload(self):
         self.upload.setShortcut('CTRL+U')
@@ -186,9 +191,6 @@ class gui_branding(QMainWindow,QTabWidget):
             self.r.downloader(self.check[i])
         self.set_table(self.r.list_objects())
         self.statusBar().showMessage('STATUS: Completed ')
-
-    def create_something(self):
-        self.popup_c = Create_Popup()
     
     def account_data(self):
         self.popup_a=Account_Popup()
@@ -219,7 +221,6 @@ class gui_branding(QMainWindow,QTabWidget):
         self.set_help_function()
         self.set_optinon()
         self.set_account()
-        self.set_create()
         self.set_upload()
         self.set_download()
 
@@ -227,7 +228,6 @@ class gui_branding(QMainWindow,QTabWidget):
         self.toolbarbucket = self.addToolBar('Tools')
         self.toolbarbucket.addAction(self.account)
         self.toolbarbucket.addAction(self.exitMe)
-        self.toolbarbucket.addAction(self.create)
         self.toolbarbucket.addAction(self.delete)
         self.toolbarbucket.addAction(self.upload)
         self.toolbarbucket.addAction(self.download)
@@ -264,12 +264,14 @@ class gui_branding(QMainWindow,QTabWidget):
                         self.r.bucketname = self.check[j]
                         self.r.delete()
                         self.set_table(self.r.lists())
-            self.r.bucketname = "empty"
+                        self.set_bucket_groupbox()
+            self.r.bucketname = "empty"      
         else:
             pass
         self.statusBar().showMessage('STATUS: Completed ')
     def helpdesk_back(self):
         del self.docked
+        del self.dockedWidget
         self.set_helpdesk()
         
     def table(self,colums):
