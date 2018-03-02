@@ -2,11 +2,10 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-#from rgwclass2 import rgw
 from graphic import gui_branding
 
 
-class RGWC(gui_branding,QMainWindow,QTabWidget):
+class RGWC(gui_branding):
 
     def __init__(self):
         super().__init__()
@@ -16,9 +15,6 @@ class RGWC(gui_branding,QMainWindow,QTabWidget):
         self.table(3)  
         self.tabs()
         self.set_helpdesk()
-        #label = QLabel(self)
-        #pixmap = QPixmap('RGWC.PNG')
-        #label.setPixmap(pixmap)
         self.window()
         self.statusBar().showMessage('STATE: Programm running . . .')
         self.set_menubar()

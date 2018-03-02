@@ -225,7 +225,7 @@ class rgw(object):
             
         else:
             #print("is not a typo press h to get information")
-            if x == 'e':
+            if x == 'q':
                 return 1
             elif x == 'h':
                 self.h()
@@ -234,7 +234,7 @@ class rgw(object):
             elif x == 'space':
                 for i in range(50):
                     print()
-            elif x =='eb':
+            elif x =='qb':
                 self.inbucket = 0
                 self.bucketname = "empty"
             elif x =='showd':
@@ -260,7 +260,7 @@ class rgw(object):
         print(" - do, delete an object")
         print(" - u, upload to bucket")
         print(" - d, download from bucket")
-        print(" - eb, get out of a bucket")
+        print(" - qb, get out of a bucket")
         print(" - pl, make a publiclink")
         print(" -rights, set the rights for a object")
         print("\n Others:")
@@ -269,6 +269,6 @@ class rgw(object):
         print(" - showd, shows data of the user")
         print(" - showl, shows your link logfile")
         print(" - downpath, set Downloadpath")
-        print(" - e, exit")
+        print(" - q, exit")
         
 

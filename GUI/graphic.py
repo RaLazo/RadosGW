@@ -23,12 +23,11 @@ class gui_branding(QMainWindow,QTabWidget):
         self.check = []
         self.checkb = []
         self.checkx = []
-    
-    def set_helpdesk(self):
+
+    def helpdesk(self):
         self.docked = QDockWidget("HelpDesk", self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.docked)
         self.dockedWidget = QWidget(self)
-        self.docked.setWidget(self.tabs)
 
     def tabs(self):
         self.tabs = QTabWidget()
@@ -76,7 +75,6 @@ class gui_branding(QMainWindow,QTabWidget):
             myform.addRow(Radiobutton[i])
         mygroupbox.setLayout(myform)
         self.scroll.setWidget(mygroupbox)
-
         
     def tab_2(self):
         layout = QFormLayout()
@@ -95,7 +93,7 @@ class gui_branding(QMainWindow,QTabWidget):
         bucket_button_show.clicked.connect(self.set_bucket_groupbox)
         bucket_button.clicked.connect(self.set_check)
         self.cb.editingFinished.connect(self.createbucket)
-        self.searchbox.textChanged.connect(self.textchange)
+        self.searchbox.editingFinished.connect(self.textchange)
         layout.addRow(setext)
         layout.addRow(self.searchbox)
         layout.addRow(cetext)
@@ -106,30 +104,34 @@ class gui_branding(QMainWindow,QTabWidget):
         layout.addWidget(self.scroll)
         layout.addRow(button_layout)
         self.tab2.setLayout(layout)
-    
+
     def createbucket(self):
-        if ((self.r.bn(self.cb.text()) == 0) and (self.cb.text()!="")):
+        self.statusBar().showMessage('STATUS: Creating a bucket . . .')
+        if ((self.r.bn(self.cb.text()) == 0) and (self.cb.text()!="") and (len(self.cb.text())>3)):
             self.r.bucketname=self.cb.text()
             self.r.create()
             self.set_table(self.r.lists())
             self.set_bucket_groupbox()
             self.cb.setText("")
+            self.statusBar().showMessage('STATUS: Completed')
+        else:
+             self.statusBar().showMessage('STATUS: ERROR this bucket can´t be created')
 
-
-    def textchange(self):
-        help_array = []
-        help = self.r.list_objects()
-        for i in range(len(help)): 
-            if str(self.searchbox.text()) in help[i]:
-                help_array.append(help[i])
-        self.set_table(help_array)
-
-
+    def textchange(self): 
+        help_array = [] 
+        help = self.r.list_objects() 
+        for i in range(len(help)):  
+            if str(self.searchbox.text()) in help[i]: 
+                help_array.append(help[i]) 
+        self.set_table(help_array) 
+    
     def radio(self, rb):
+        del self.checkb [:] 
         for i in range(len(rb)):
             if str(rb[i].isChecked()) == "True":
                self.r.bn(rb[i].text())
                self.set_table(self.r.list_objects())
+               
 
         
     def window(self):
@@ -145,11 +147,11 @@ class gui_branding(QMainWindow,QTabWidget):
     
     def set_optinon(self):
         self.helpdesk.setShortcut('CTRL+H')
-        self.helpdesk.triggered.connect(self.helpdesk_back)
+        self.helpdesk.triggered.connect(self.set_helpdesk)
         self.option.addAction(self.helpdesk)
 
     def set_exit_function(self):
-        self.exitMe.setShortcut('Ctrl+E')
+        self.exitMe.setShortcut('Ctrl+Q')
         self.exitMe.triggered.connect(self.closeit)
         self.file.addAction(self.exitMe)
 
@@ -161,12 +163,13 @@ class gui_branding(QMainWindow,QTabWidget):
     def delete_something(self):
         self.delete.setShortcut('CTRL+R')
         self.delete.triggered.connect(self.delete_window)
+        self.option.addAction(self.delete)
     
     def closeit(self):
         self.close()
         try:
             self.popup_a.close()
-        except AttributeError:
+        except (AttributeError):
             pass
         
 
@@ -178,25 +181,56 @@ class gui_branding(QMainWindow,QTabWidget):
     def set_upload(self):
         self.upload.setShortcut('CTRL+U')
         self.upload.triggered.connect(self.openFileNamesDialog)
-        self.file.addAction(self.upload)
+        self.option.addAction(self.upload)
     
     def set_download(self):
         self.download.setShortcut('CTRL+D')
         self.download.triggered.connect(self.download_something)
-        self.file.addAction(self.download)
+        self.option.addAction(self.download)
+
+    def set_rights(self):
+        self.public.setShortcut("CTRL+P")
+        self.private.setShortcut("CTRL+V")
+        self.public.triggered.connect(lambda: self.right(0))
+        self.private.triggered.connect(lambda: self.right(1))
+        self.option.addAction(self.public)
+        self.option.addAction(self.private)
+    
+    def right(self, right):
+        
+        self.statusBar().showMessage('STATUS: Chaning Permissions . . . ')
+        if right == 1: 
+            for i in range(len(self.check)):
+                self.r.rights_mangement(self.check[i],1)
+        else:
+             for i in range(len(self.check)):
+                self.r.rights_mangement(self.check[i],0)
+        self.set_table(self.r.list_objects())     
+        self.statusBar().showMessage('STATUS: Completed')       
+
 
     def download_something(self):
         self.statusBar().showMessage('STATUS: Downloading . . .')
-        for i in range(len(self.check)):
-            self.r.downloader(self.check[i])
-        self.set_table(self.r.list_objects())
-        self.statusBar().showMessage('STATUS: Completed ')
-    
+        if self.check:
+            for i in range(len(self.check)):
+                self.r.downloader(self.check[i])
+            self.set_table(self.r.list_objects())
+            self.statusBar().showMessage('STATUS: Completed ')
+        else:
+             self.statusBar().showMessage('STATUS: ERROR can´t download this object')
     def account_data(self):
         self.popup_a=Account_Popup()
-     
+    
+    def set_helpdesk(self):
+        try:
+            del self.docked
+        except AttributeError:
+            pass
+        self.docked = QDockWidget("HelpDesk", self)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.docked)
+        self.docked.setWidget(self.tabs)    
+
     def openFileNamesDialog(self):   
-        self.statusBar().showMessage('STATUS: Starting Upload . . . ')
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         files, _ = QFileDialog.getOpenFileNames(self,"Upload your Data", "","All Files (*);;Python Files (*.py)", options=options)
@@ -204,7 +238,6 @@ class gui_branding(QMainWindow,QTabWidget):
             for i in range(len(files)):
                 self.r.uploader(files[i])
             self.set_table(self.r.list_objects())
-        self.statusBar().showMessage('STATUS: Completed ')
 
     
     def set_actions(self):
@@ -215,7 +248,6 @@ class gui_branding(QMainWindow,QTabWidget):
         self.public = QAction(QIcon('icon/public.svg'),'&Public',self)
         self.private = QAction(QIcon('icon/private.svg'),'&Private',self)
         self.account = QAction(QIcon('icon/account.svg'),'&Account',self)
-        self.create = QAction(QIcon('icon/create.svg'),'&Create',self)
         self.helpdesk = QAction(QIcon("icon/option.svg"),'&Helpdesk',self)
         self.set_exit_function()
         self.set_help_function()
@@ -223,6 +255,7 @@ class gui_branding(QMainWindow,QTabWidget):
         self.set_account()
         self.set_upload()
         self.set_download()
+        self.set_rights()
 
     def set_toolbar(self):
         self.toolbarbucket = self.addToolBar('Tools')
@@ -235,16 +268,12 @@ class gui_branding(QMainWindow,QTabWidget):
         self.toolbarbucket.addAction(self.public)
         self.delete_something()
 
-    def checkbox_clicked(self, box):
-        print(box.text())
-
     def openUrl(self):
         url = QUrl('https://github.com/RaLazo/RadosGW')
         if not QDesktopServices.openUrl(url):
             QMessageBox.warning(self, 'Open Url', 'Could not open url')
 
     def delete_window(self):
-        self.statusBar().showMessage('STATUS: Start remove of  . . . ')
         choice = QMessageBox.question(self,'garbage can','Are you sure ?',QMessageBox.Yes | QMessageBox.No)
         if choice == QMessageBox.Yes:
             if self.r.bucketname != "empty":
@@ -255,7 +284,7 @@ class gui_branding(QMainWindow,QTabWidget):
                         if b[0] == self.check[j]:
                              self.r.delete_object(self.check[j])
                 self.set_table(self.r.list_objects())
-                self.set_bucket_groupbox()
+
             a = self.r.lists()
             for i in range(len(a)):
                 b=a[i].split()
@@ -265,14 +294,9 @@ class gui_branding(QMainWindow,QTabWidget):
                         self.r.delete()
                         self.set_table(self.r.lists())
                         self.set_bucket_groupbox()
-            self.r.bucketname = "empty"      
+                        self.r.bucketname = "empty"
         else:
             pass
-        self.statusBar().showMessage('STATUS: Completed ')
-    def helpdesk_back(self):
-        del self.docked
-        del self.dockedWidget
-        self.set_helpdesk()
         
     def table(self,colums):
         self.table = QTableWidget() 
@@ -285,20 +309,18 @@ class gui_branding(QMainWindow,QTabWidget):
     
     def set_table(self,b):
         del self.table
-        del self.checkb [:]
         self.table(5)
         object=1
         try:
-            b[1].split()[2]
+            b[0].split()[2]
         except IndexError:
             object=0
             del self.table
             self.table(3)
-
+        a=[]
         [self.table.insertRow(i) for i in range(len(b))]
-        a = []
+        
         x = []
-        q = []
         for i in range(len(b)):
             x.append(b[i].split()[0])
             y=b[i].split()[1]
@@ -308,26 +330,23 @@ class gui_branding(QMainWindow,QTabWidget):
             self.table.setItem(i, 1, QTableWidgetItem(x[i]))
             self.table.setItem(i, 2, QTableWidgetItem(y))
             if object == 1:
-               q=b[i].split()[3]
                z=b[i].split()[2]
+               q=b[i].split()[3]
                self.table.setItem(i,3,QTableWidgetItem(z))
                self.table.setItem(i,4,QTableWidgetItem(q))
-        self.checkx = x
-        self.checkb = a
+        self.checkx = x 
+        self.checkb = a 
 
     def checker(self,a,x):
         del self.check[:]
         for i in range(len(a)):
-            if a[i].isChecked()== True:
+            if str(a[i].isChecked())=="True":
                 self.check.append(x[i])
-
-    def set_check(self):
-        for i in range (len(self.checkb)):
-            if self.checkb[i].isChecked() == True:
-                self.checkb[i].setChecked(False)
-            else:
-                self.checkb[i].setChecked(True)
-        self.checker(self.checkb, self.checkx)
-
-
-           
+    
+    def set_check(self): 
+        for i in range (len(self.checkb)): 
+            if self.checkb[i].isChecked() == True: 
+                self.checkb[i].setChecked(False) 
+            else: 
+                self.checkb[i].setChecked(True) 
+        self.checker(self.checkb, self.checkx) 
