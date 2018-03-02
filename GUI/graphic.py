@@ -1,3 +1,7 @@
+# Title: RadosGW - GUI - class
+# Eng.: Rafael Lazenhofer
+# Ver.: 1.0
+# Date: 02.03.2018
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -13,8 +17,11 @@ ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 class gui_branding(QMainWindow,QTabWidget):
     
     def __init__(self):
+        '''
+        Intialisieren der GUI Klasse
+        '''
         super().__init__()
-        file = open("../UserData.txt","r") 
+        file = open("UserData.txt","r") 
         string=file.read()
         file.close()
         string=string.split("\n")    
@@ -24,12 +31,11 @@ class gui_branding(QMainWindow,QTabWidget):
         self.checkb = []
         self.checkx = []
 
-    def helpdesk(self):
-        self.docked = QDockWidget("HelpDesk", self)
-        self.addDockWidget(Qt.RightDockWidgetArea, self.docked)
-        self.dockedWidget = QWidget(self)
-
     def tabs(self):
+        '''
+        Initialisiert die Tabs die sich
+        im Helpdesk befinden
+        '''
         self.tabs = QTabWidget()
         self.tab1 = QWidget()	
         self.tab2 = QWidget()
@@ -40,6 +46,10 @@ class gui_branding(QMainWindow,QTabWidget):
         self.tab_2()
     
     def tab_1(self):
+        '''
+        Initialisiert das Tab in der Willkommenstext steht
+        und der Downloadpath gesetzt wird 
+        '''
         layout = QFormLayout()
         l1 = QLabel() 
         label = QLabel(self)
@@ -54,13 +64,19 @@ class gui_branding(QMainWindow,QTabWidget):
         layout.addRow(label)
         layout.addRow(l1)
         layout.addRow(downbutton)
-        # Optional, resize window to image size
         self.tab1.setLayout(layout)
     
     def downpath(self):
+        '''
+        Für das setzen des Downloadpaths
+        '''
         self.r.dp = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
 
     def set_bucket_groupbox(self):
+        '''
+        dated die "Your buckets" up die sich im
+        zweiten Tab "Tools" des "HelpDesk" befindet
+        '''
         mygroupbox = QGroupBox('Your Buckets')
         myform = QFormLayout()
         k = []
@@ -77,6 +93,10 @@ class gui_branding(QMainWindow,QTabWidget):
         self.scroll.setWidget(mygroupbox)
         
     def tab_2(self):
+        '''
+        Initialisiert die das zweite Tab "Tools" des
+        "HelpDesks" 
+        '''
         layout = QFormLayout()
         button_layout=QHBoxLayout()
         setext=QLabel()
@@ -106,6 +126,10 @@ class gui_branding(QMainWindow,QTabWidget):
         self.tab2.setLayout(layout)
 
     def createbucket(self):
+        '''
+        Erzeugt einen Bucket wenn die bestimmten Parameter
+        passen (z.B.: mehr als 3 Zeichen)
+        '''
         self.statusBar().showMessage('STATUS: Creating a bucket . . .')
         if ((self.r.bn(self.cb.text()) == 0) and (self.cb.text()!="") and (len(self.cb.text())>3)):
             self.r.bucketname=self.cb.text()
@@ -118,6 +142,10 @@ class gui_branding(QMainWindow,QTabWidget):
              self.statusBar().showMessage('STATUS: ERROR this bucket can´t be created')
 
     def textchange(self): 
+        '''
+        Sucht nach den Objekten die im Suchfeld vom zweiten Tab "Tools"
+        eingegeben werden.
+        '''
         help_array = [] 
         help = self.r.list_objects() 
         for i in range(len(help)):  
@@ -126,6 +154,11 @@ class gui_branding(QMainWindow,QTabWidget):
         self.set_table(help_array) 
     
     def radio(self, rb):
+        '''
+        Überprüft die Radiobuttons in der "Your buckets" Box vom
+        zweiten Tab "Tools" und setz den Bucketnamen und dated die
+        Tabelle up mit den Objekten des Buckets up
+        '''
         del self.checkb [:] 
         for i in range(len(rb)):
             if str(rb[i].isChecked()) == "True":
@@ -135,37 +168,58 @@ class gui_branding(QMainWindow,QTabWidget):
 
         
     def window(self):
+        '''
+        setzt die Fensterparameter des RGWC
+        '''
         self.setWindowTitle("Rados Gateway Connector")
         self.setWindowIcon(QIcon("icon/RGWC.PNG"))
         self.setGeometry(100,100,800,500)
 
     def set_menubar(self):
+        '''
+        Initialisiert die Menuebar des RGWC - GUI
+        '''
         self.menubar = self.menuBar()
         self.file = self.menubar.addMenu('&Start')
         self.option = self.menubar.addMenu('&Options')
         self.help = self.menubar.addMenu('&Help')
     
     def set_optinon(self):
+        '''
+        Initialisert die den Button für den "HelpDesk"
+        '''
         self.helpdesk.setShortcut('CTRL+H')
         self.helpdesk.triggered.connect(self.set_helpdesk)
         self.option.addAction(self.helpdesk)
 
     def set_exit_function(self):
+        '''
+        Initialisert die den Button für das Beenden des Programs
+        '''
         self.exitMe.setShortcut('Ctrl+Q')
         self.exitMe.triggered.connect(self.closeit)
         self.file.addAction(self.exitMe)
 
     def set_help_function(self):
+        '''
+        Initialisert die Hilfe 
+        '''
         self.helplink = QAction('&more. . .',self)
         self.helplink.triggered.connect(self.openUrl)
         self.help.addAction(self.helplink)
 
     def delete_something(self):
+        '''
+        Initialisert den "Delete" Button
+        '''
         self.delete.setShortcut('CTRL+R')
         self.delete.triggered.connect(self.delete_window)
         self.option.addAction(self.delete)
     
     def closeit(self):
+        '''
+        schließt das Programm
+        '''
         self.close()
         try:
             self.popup_a.close()
@@ -174,21 +228,33 @@ class gui_branding(QMainWindow,QTabWidget):
         
 
     def set_account(self):
+        '''
+        Initialisert den "Account" Button
+        '''
         self.account.setShortcut('CTRL+A')
         self.account.triggered.connect(self.account_data)
         self.file.addAction(self.account)
     
     def set_upload(self):
+        '''
+        Initialisert den "Uploader" Button
+        '''
         self.upload.setShortcut('CTRL+U')
         self.upload.triggered.connect(self.openFileNamesDialog)
         self.option.addAction(self.upload)
     
     def set_download(self):
+        '''
+        Initialisert den "Download" Button
+        '''
         self.download.setShortcut('CTRL+D')
         self.download.triggered.connect(self.download_something)
         self.option.addAction(self.download)
 
     def set_rights(self):
+        '''
+        Initialisert die Buttons für die Rechte
+        '''
         self.public.setShortcut("CTRL+P")
         self.private.setShortcut("CTRL+V")
         self.public.triggered.connect(lambda: self.right(0))
@@ -197,7 +263,9 @@ class gui_branding(QMainWindow,QTabWidget):
         self.option.addAction(self.private)
     
     def right(self, right):
-        
+        '''
+        Mit dieser Methode werden die Rechte geändert
+        '''
         self.statusBar().showMessage('STATUS: Chaning Permissions . . . ')
         if right == 1: 
             for i in range(len(self.check)):
@@ -210,6 +278,10 @@ class gui_branding(QMainWindow,QTabWidget):
 
 
     def download_something(self):
+        '''
+        Mit dieser Methode werden Daten in den dafür vorgesehenen
+        Ordner gedownloadet
+        '''
         self.statusBar().showMessage('STATUS: Downloading . . .')
         if self.check:
             for i in range(len(self.check)):
@@ -222,6 +294,9 @@ class gui_branding(QMainWindow,QTabWidget):
         self.popup_a=Account_Popup()
     
     def set_helpdesk(self):
+        '''
+        setzt den "HelpDesk" bzw. initialiesirt in
+        '''
         try:
             del self.docked
         except AttributeError:
@@ -230,17 +305,28 @@ class gui_branding(QMainWindow,QTabWidget):
         self.addDockWidget(Qt.RightDockWidgetArea, self.docked)
         self.docked.setWidget(self.tabs)    
 
-    def openFileNamesDialog(self):   
+    def openFileNamesDialog(self):  
+        '''
+        Diese Methode ist für den Upload von Daten zuständig
+        '''
+        self.statusBar().showMessage('STATUS: opening the upload section') 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         files, _ = QFileDialog.getOpenFileNames(self,"Upload your Data", "","All Files (*);;Python Files (*.py)", options=options)
         if files:
+            self.statusBar().showMessage('STATUS: Uploading . . .') 
             for i in range(len(files)):
                 self.r.uploader(files[i])
             self.set_table(self.r.list_objects())
+            self.statusBar().showMessage('STATUS: Completed')
+        else:
+             self.statusBar().showMessage('STATUS: ERROR during the upload')
 
     
     def set_actions(self):
+        '''
+        Initialsiert die einzelenen Actions der Tool & Menuebar
+        '''
         self.exitMe = QAction(QIcon('icon/exit.svg'),'&Exit',self)
         self.delete = QAction(QIcon('icon/delete.svg'),'&Delete',self)
         self.upload = QAction(QIcon('icon/upload.svg'),'&Upload',self)
@@ -258,6 +344,9 @@ class gui_branding(QMainWindow,QTabWidget):
         self.set_rights()
 
     def set_toolbar(self):
+        '''
+        Initialiesiert die Toolbar
+        '''
         self.toolbarbucket = self.addToolBar('Tools')
         self.toolbarbucket.addAction(self.account)
         self.toolbarbucket.addAction(self.exitMe)
@@ -269,14 +358,23 @@ class gui_branding(QMainWindow,QTabWidget):
         self.delete_something()
 
     def openUrl(self):
+        '''
+        Ist für die "Help" der Menuebar zuständig
+        und öffnet unter dem Punkt "more . . ." den Link
+        zum Github Repository des RGWC
+        '''
         url = QUrl('https://github.com/RaLazo/RadosGW')
         if not QDesktopServices.openUrl(url):
             QMessageBox.warning(self, 'Open Url', 'Could not open url')
 
     def delete_window(self):
+        '''
+        Diese Methode ist für das Löschen von Buckets & Objects verantwortlich
+        '''
         choice = QMessageBox.question(self,'garbage can','Are you sure ?',QMessageBox.Yes | QMessageBox.No)
         if choice == QMessageBox.Yes:
             if self.r.bucketname != "empty":
+                self.statusBar().showMessage('STATUS: Starting delete process . . .') 
                 a = self.r.list_objects()
                 for i in range(len(a)):
                     b=a[i].split()
@@ -295,10 +393,14 @@ class gui_branding(QMainWindow,QTabWidget):
                         self.set_table(self.r.lists())
                         self.set_bucket_groupbox()
                         self.r.bucketname = "empty"
+            self.statusBar().showMessage('STATUS: Completed')
         else:
             pass
         
     def table(self,colums):
+        '''
+        Initialisiert die Tabele für das Programm
+        '''
         self.table = QTableWidget() 
         header = self.table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
@@ -308,6 +410,10 @@ class gui_branding(QMainWindow,QTabWidget):
         width += self.table.horizontalHeader().length()+100
     
     def set_table(self,b):
+        '''
+        Fügt bzw. formiert die Tabelle je nach gebrauch um bzw. fügt 
+        Daten hinzu & löscht auch diese
+        '''
         del self.table
         self.table(5)
         object=1
@@ -338,12 +444,21 @@ class gui_branding(QMainWindow,QTabWidget):
         self.checkb = a 
 
     def checker(self,a,x):
+        '''
+        Überprüft welche Elemente der 
+        Table angehakt sind und speichert diese 
+        in ein Array
+        '''
         del self.check[:]
         for i in range(len(a)):
             if str(a[i].isChecked())=="True":
                 self.check.append(x[i])
     
     def set_check(self): 
+        '''
+        Setzt alle Elemente der Table auf True also hakt sie ab
+        (wird in von dem Button "Mark All" im zweiten Tab des "HelpDesks" verwendet)
+        '''
         for i in range (len(self.checkb)): 
             if self.checkb[i].isChecked() == True: 
                 self.checkb[i].setChecked(False) 

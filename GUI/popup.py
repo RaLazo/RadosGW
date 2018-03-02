@@ -1,3 +1,9 @@
+# Title: RadosGW - GUI - Popup
+# Eng.: Rafael Lazenhofer
+# Ver.: 1.0
+# Date: 02.03.2018
+#
+# Ist für das Accountpopup zuständig
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
