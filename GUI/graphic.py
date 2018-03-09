@@ -3,6 +3,7 @@
 # Ver.: 1.0
 # Date: 02.03.2018
 import sys
+import paramiko
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -23,10 +24,10 @@ class gui_branding(QMainWindow,QTabWidget):
         super().__init__()
         file = open("UserData.txt","r") 
         string=file.read()
-        file.close()
         string=string.split("\n")    
         self.r=rgw(string[0],string[1],string[2])
         self.r.dp=string[3]
+        self.host=string[2]
         self.check = []
         self.checkb = []
         self.checkx = []
@@ -39,12 +40,55 @@ class gui_branding(QMainWindow,QTabWidget):
         self.tabs = QTabWidget()
         self.tab1 = QWidget()	
         self.tab2 = QWidget()
-        self.tab3 = QWidget()
+        #self.tab3 = QWidget()
         self.tabs.addTab(self.tab1,"RGWC")
         self.tabs.addTab(self.tab2,"Tools")
+        #self.tabs.addTab(self.tab3,"Admin")
         self.tab_1()
         self.tab_2()
+        #self.tab_3()
     
+    def tab_3(self):
+        layout = QFormLayout()
+        l1 = QLabel() 
+        text=QLabel()
+        text.setText("Create a user")
+        button_layout=QHBoxLayout()
+        self.createbox = QLineEdit()
+        check_button=QPushButton("Mark all",self)
+        check_button.clicked.connect(self.set_check)
+        button = QPushButton("Show all users",self)
+        button.clicked.connect(self.admin_conector)
+        l1.setAlignment(Qt.AlignCenter)
+        l1.setText("TEST VERSION!")
+        l1.setFont(QFont("Calibri", 11, QFont.Bold))
+        button_layout.addWidget(check_button)
+        button_layout.addWidget(button)
+        layout.addRow(l1)
+        layout.addRow(text)
+        layout.addRow(self.createbox)
+        layout.addRow(button_layout)
+        self.tab3.setLayout(layout)
+    
+    def admin_conector(self):
+        ip=self.host
+        port=2001
+        username='root'
+        password='linux'
+        a=[]
+        cmd='radosgw-admin metadata list user' 
+        
+        ssh=paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(ip,port,username,password)
+
+        stdin,stdout,stderr=ssh.exec_command(cmd)
+        outlines=stdout.readlines()
+        resp=''.join(outlines)
+        resp=resp.split("\"")[1]
+        a.append(resp)
+        self.set_table2(a)
+
     def tab_1(self):
         '''
         Initialisiert das Tab in der Willkommenstext steht
@@ -146,12 +190,13 @@ class gui_branding(QMainWindow,QTabWidget):
         Sucht nach den Objekten die im Suchfeld vom zweiten Tab "Tools"
         eingegeben werden.
         '''
-        help_array = [] 
-        help = self.r.list_objects() 
-        for i in range(len(help)):  
-            if str(self.searchbox.text()) in help[i]: 
-                help_array.append(help[i]) 
-        self.set_table(help_array) 
+        if self.r.bucketname != "empty":
+            help_array = []
+            help = self.list_objects() 
+            for i in range(len(help)):  
+                if str(self.searchbox.text()) in help[i]: 
+                    help_array.append(help[i]) 
+            self.set_table(help_array) 
     
     def radio(self, rb):
         '''
@@ -163,9 +208,19 @@ class gui_branding(QMainWindow,QTabWidget):
         for i in range(len(rb)):
             if str(rb[i].isChecked()) == "True":
                self.r.bn(rb[i].text())
-               self.set_table(self.r.list_objects())
+               self.set_table(self.list_objects())
                
-
+    def set_check(self): 
+        '''
+        Setzt alle Elemente der Table auf True also hakt sie ab
+        (wird in von dem Button "Mark All" im zweiten Tab des "HelpDesks" verwendet)
+        '''
+        for i in range (len(self.checkb)): 
+            if self.checkb[i].isChecked() == True: 
+                self.checkb[i].setChecked(False) 
+            else: 
+                self.checkb[i].setChecked(True) 
+        self.checker(self.checkb, self.checkx) 
         
     def window(self):
         '''
@@ -173,7 +228,7 @@ class gui_branding(QMainWindow,QTabWidget):
         '''
         self.setWindowTitle("Rados Gateway Connector")
         self.setWindowIcon(QIcon("icon/RGWC.PNG"))
-        self.setGeometry(100,100,800,500)
+        self.setGeometry(500,250,800,500)
 
     def set_menubar(self):
         '''
@@ -273,7 +328,7 @@ class gui_branding(QMainWindow,QTabWidget):
         else:
              for i in range(len(self.check)):
                 self.r.rights_mangement(self.check[i],0)
-        self.set_table(self.r.list_objects())     
+        self.set_table(self.list_objects())     
         self.statusBar().showMessage('STATUS: Completed')       
 
 
@@ -284,9 +339,11 @@ class gui_branding(QMainWindow,QTabWidget):
         '''
         self.statusBar().showMessage('STATUS: Downloading . . .')
         if self.check:
-            for i in range(len(self.check)):
+            check_len=len(self.check)
+            for i in range(check_len):
                 self.r.downloader(self.check[i])
-            self.set_table(self.r.list_objects())
+                self.statusBar().showMessage('STATUS: Downloading Data '+str(i)+' of '+str(check_len))
+            self.set_table(self.list_objects())
             self.statusBar().showMessage('STATUS: Completed ')
         else:
              self.statusBar().showMessage('STATUS: ERROR can´t download this object')
@@ -315,9 +372,12 @@ class gui_branding(QMainWindow,QTabWidget):
         files, _ = QFileDialog.getOpenFileNames(self,"Upload your Data", "","All Files (*);;Python Files (*.py)", options=options)
         if files:
             self.statusBar().showMessage('STATUS: Uploading . . .') 
-            for i in range(len(files)):
+            upload_num=len(files)
+            for i in range(upload_num):
                 self.r.uploader(files[i])
-            self.set_table(self.r.list_objects())
+                self.statusBar().showMessage('STATUS: Uploading Data '+str(i)+' of '+str(upload_num)) 
+            self.set_table(self.list_objects())
+
             self.statusBar().showMessage('STATUS: Completed')
         else:
              self.statusBar().showMessage('STATUS: ERROR during the upload')
@@ -375,13 +435,13 @@ class gui_branding(QMainWindow,QTabWidget):
         if choice == QMessageBox.Yes:
             if self.r.bucketname != "empty":
                 self.statusBar().showMessage('STATUS: Starting delete process . . .') 
-                a = self.r.list_objects()
+                a = self.list_objects()
                 for i in range(len(a)):
                     b=a[i].split()
                     for j in range(len(self.check)):
                         if b[0] == self.check[j]:
                              self.r.delete_object(self.check[j])
-                self.set_table(self.r.list_objects())
+                self.set_table(self.list_objects())
 
             a = self.r.lists()
             for i in range(len(a)):
@@ -409,6 +469,22 @@ class gui_branding(QMainWindow,QTabWidget):
         width = self.table.verticalHeader().width()
         width += self.table.horizontalHeader().length()+100
     
+    def set_table2(self,b):
+        del self.table
+        a=[]
+        self.table(2)
+        [self.table.insertRow(i) for i in range(len(b))]
+        x=[]
+        for i in range(len(b)):
+            x.append(b[i].split()[0])
+            a.append(QCheckBox(str(i),parent=self.table))
+            self.table.setCellWidget(i, 0, a[i])
+            a[i].clicked.connect(lambda: self.checker(a,x))
+            self.table.setItem(i, 1, QTableWidgetItem(x[i]))
+        self.checkx = x 
+        self.checkb = a 
+        
+
     def set_table(self,b):
         '''
         Fügt bzw. formiert die Tabelle je nach gebrauch um bzw. fügt 
@@ -453,15 +529,40 @@ class gui_branding(QMainWindow,QTabWidget):
         for i in range(len(a)):
             if str(a[i].isChecked())=="True":
                 self.check.append(x[i])
+
+    def list_objects(self):
+        '''
+        Lists the objects of an bucket
+        RETURN VALUE:
+            [object_name] [object_size] [modification_date]
+        '''
+        b=[]
+        bucket = self.r.conn.get_bucket(self.r.bucketname)
+        i=0
+        for key in bucket.list():
+            i=self.updating(i)
+            if(len(str(key.get_acl()))== 42):
+                rigth = "Privat"
+            else:
+                rigth="Public"
+            b.append("{name} {size} {modified} {acl}".format(
+                    name = key.name,
+                    size = key.size,
+                    modified = key.last_modified,
+                    acl = rigth,
+                    ))
+        self.statusBar().showMessage('STATUS: Completed') 
+        return b        
     
-    def set_check(self): 
-        '''
-        Setzt alle Elemente der Table auf True also hakt sie ab
-        (wird in von dem Button "Mark All" im zweiten Tab des "HelpDesks" verwendet)
-        '''
-        for i in range (len(self.checkb)): 
-            if self.checkb[i].isChecked() == True: 
-                self.checkb[i].setChecked(False) 
-            else: 
-                self.checkb[i].setChecked(True) 
-        self.checker(self.checkb, self.checkx) 
+    def updating(self, i):
+        string='Updating '
+        if i<4:
+            for j in range(i):
+                string = string+'. '
+            self.statusBar().showMessage(string) 
+            i=i+1
+        else:
+            self.statusBar().showMessage(string)
+            string='Updating ' 
+            i=0
+        return i

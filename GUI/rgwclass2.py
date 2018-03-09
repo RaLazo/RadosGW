@@ -138,7 +138,6 @@ class rgw(object):
                 rigth = "Privat"
             else:
                 rigth="Public"
-            
             b.append("{name} {size} {modified} {acl}".format(
                     name = key.name,
                     size = key.size,
