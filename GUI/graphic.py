@@ -40,13 +40,11 @@ class gui_branding(QMainWindow,QTabWidget):
         self.tabs = QTabWidget()
         self.tab1 = QWidget()	
         self.tab2 = QWidget()
-        #self.tab3 = QWidget()
         self.tabs.addTab(self.tab1,"RGWC")
         self.tabs.addTab(self.tab2,"Tools")
-        #self.tabs.addTab(self.tab3,"Admin")
         self.tab_1()
         self.tab_2()
-        #self.tab_3()
+        self.admin_conector()
     
     def tab_3(self):
         layout = QFormLayout()
@@ -55,10 +53,13 @@ class gui_branding(QMainWindow,QTabWidget):
         text.setText("Create a user")
         button_layout=QHBoxLayout()
         self.createbox = QLineEdit()
+        self.createbox.editingFinished.connect(self.create_user)
         check_button=QPushButton("Mark all",self)
         check_button.clicked.connect(self.set_check)
         button = QPushButton("Show all users",self)
-        button.clicked.connect(self.admin_conector)
+        button.clicked.connect(self.show_all_users)
+        #data_button = QPushButton("Show User Data",self)
+        #data_button.clicked.connect(self.show)
         l1.setAlignment(Qt.AlignCenter)
         l1.setText("TEST VERSION!")
         l1.setFont(QFont("Calibri", 11, QFont.Bold))
@@ -68,26 +69,75 @@ class gui_branding(QMainWindow,QTabWidget):
         layout.addRow(text)
         layout.addRow(self.createbox)
         layout.addRow(button_layout)
+        #layout.addRow(data_button)
         self.tab3.setLayout(layout)
     
     def admin_conector(self):
-        ip=self.host
-        port=2001
-        username='root'
-        password='linux'
+        '''
+        Diese Methode baut eine SSH Verbindung zu
+        einem Speichercluster um die Funktionen des Admin Tabs
+        nutzen zu können.
+        '''
+        try:
+            file=open('AdminData.txt','r')
+            string = file.read()
+            try:
+                string=string.split("\n") 
+                ip=string[0]
+                port=string[1]
+                username=string[2]
+                password=string[3]
+                self.tab3 = QWidget()
+                self.tabs.addTab(self.tab3,"Admin")
+                self.tab_3()
+                self.ssh=paramiko.SSHClient()
+                self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                self.ssh.connect(ip,port,username,password)
+            except IndexError:
+                pass
+        except FileNotFoundError:
+            pass   
+        
+    
+    def show_all_users(self):
+        '''
+        Zeigt alle User eines Speichercluster an
+        '''
+        self.statusBar().showMessage('STATUS: looking for users . . .')   
         a=[]
         cmd='radosgw-admin metadata list user' 
-        
-        ssh=paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(ip,port,username,password)
-
-        stdin,stdout,stderr=ssh.exec_command(cmd)
+        stdin,stdout,stderr=self.ssh.exec_command(cmd)
         outlines=stdout.readlines()
         resp=''.join(outlines)
-        resp=resp.split("\"")[1]
-        a.append(resp)
+        resp=resp.split("\"")
+        for i in range(len(resp)):
+            
+            if resp[i].find("[") == -1:
+                if resp[i].find(",") == -1:
+                     if resp[i].find("]") == -1:
+                        a.append(resp[i])
+        self.statusBar().showMessage('STATUS: Completed')   
         self.set_table2(a)
+
+    def create_user(self):
+        '''
+        erstellt einenn User 
+        '''
+        self.statusBar().showMessage('STATUS: creating User . . .')   
+        cmd = "radosgw-admin user create --uid="+self.createbox.text()+" --display-name="+self.createbox.text()+" >> s3_user_data/"+self.createbox.text()+".txt"
+        self.ssh.exec_command(cmd)
+        self.statusBar().showMessage('STATUS: Completed')   
+
+    def delete_users(self):
+        self.statusBar().showMessage('STATUS: deleting . . .')
+        for i in range(len(self.check)):
+            self.statusBar().showMessage('STATUS: '+str(i)+' of '+str(len(self.check)))
+            cmd ="radosgw-admin user rm --uid="+self.check[i]
+            self.ssh.exec_command(cmd)
+        self.statusBar().showMessage('STATUS: Updating table . . .')    
+        self.show_all_users()
+        self.statusBar().showMessage('STATUS: Completed')  
+        
 
     def tab_1(self):
         '''
@@ -423,7 +473,7 @@ class gui_branding(QMainWindow,QTabWidget):
         und öffnet unter dem Punkt "more . . ." den Link
         zum Github Repository des RGWC
         '''
-        url = QUrl('https://github.com/RaLazo/RadosGW')
+        url = QUrl('https://github.com/RaLazo/RadosGW/wiki/RGWC---GUI')
         if not QDesktopServices.openUrl(url):
             QMessageBox.warning(self, 'Open Url', 'Could not open url')
 
@@ -433,27 +483,30 @@ class gui_branding(QMainWindow,QTabWidget):
         '''
         choice = QMessageBox.question(self,'garbage can','Are you sure ?',QMessageBox.Yes | QMessageBox.No)
         if choice == QMessageBox.Yes:
-            if self.r.bucketname != "empty":
-                self.statusBar().showMessage('STATUS: Starting delete process . . .') 
-                a = self.list_objects()
+            if self.table_output_type == 0:
+                if self.r.bucketname != "empty":
+                    self.statusBar().showMessage('STATUS: Starting delete process . . .') 
+                    a = self.list_objects()
+                    for i in range(len(a)):
+                        b=a[i].split()
+                        for j in range(len(self.check)):
+                            if b[0] == self.check[j]:
+                                 self.r.delete_object(self.check[j])
+                    self.set_table(self.list_objects())
+
+                a = self.r.lists()
                 for i in range(len(a)):
                     b=a[i].split()
                     for j in range(len(self.check)):
                         if b[0] == self.check[j]:
-                             self.r.delete_object(self.check[j])
-                self.set_table(self.list_objects())
-
-            a = self.r.lists()
-            for i in range(len(a)):
-                b=a[i].split()
-                for j in range(len(self.check)):
-                    if b[0] == self.check[j]:
-                        self.r.bucketname = self.check[j]
-                        self.r.delete()
-                        self.set_table(self.r.lists())
-                        self.set_bucket_groupbox()
-                        self.r.bucketname = "empty"
-            self.statusBar().showMessage('STATUS: Completed')
+                            self.r.bucketname = self.check[j]
+                            self.r.delete()
+                            self.set_table(self.r.lists())
+                            self.set_bucket_groupbox()
+                            self.r.bucketname = "empty"
+                self.statusBar().showMessage('STATUS: Completed')
+            else:
+                self.delete_users()
         else:
             pass
         
@@ -483,6 +536,7 @@ class gui_branding(QMainWindow,QTabWidget):
             self.table.setItem(i, 1, QTableWidgetItem(x[i]))
         self.checkx = x 
         self.checkb = a 
+        self.table_output_type=1
         
 
     def set_table(self,b):
@@ -518,6 +572,7 @@ class gui_branding(QMainWindow,QTabWidget):
                self.table.setItem(i,4,QTableWidgetItem(q))
         self.checkx = x 
         self.checkb = a 
+        self.table_output_type=0
 
     def checker(self,a,x):
         '''
