@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+
+<html>
+  <title>W3.CSS Template</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <style>
+      html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+  </style>
+
+
+
+
+
+    <body style="background:url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/dark_wall.png);">
+
+      <!-- Top container -->
+      <div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
+
+        <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i> �Menu</button>
+        <span class="w3-bar-item w3-right">Daniel Kaltenboeck & Rafael Lazenhofer</span>
+      </div>
+
+      <!-- Sidebar/menu -->
+
+      <nav class="w3-sidebar w3-collapse w3-animate-left" style="z-index:3;width:300px; background-color: #1a1a1a; color: white;" id="mySidebar"><br>
+
+        <div class="w3-container w3-row" style="background-color: #262626;">
+          <div class="w3-col s8 w3-bar">
+
+
+            <h4><center>Welcome, {{user}}</center></h4>
+
+
+          </div>
+
+        </div>
+
+
+
+        <div class="w3-container">
+
+          <br>
+          <br>
+          <h3><center>Menu</center></h3>
+
+
+
+        </div>
+          <hr>
+        <div class="w3-bar-block">
+
+
+          <a href="../profile" class="w3-bar-item w3-padding w3-button ">Show User Data</a>
+
+          <a href="../chcolorw" class="w3-bar-item w3-padding w3-button">Change Style</a>
+
+          <a href="../" class="w3-bar-item w3-padding w3-button">Logout</a>
+          <hr>
+          <br><br>
+
+        </div>
+
+      </nav>
+
+
+      <!-- Overlay effect when opening sidebar on small screens -->
+      <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+        <!-- !PAGE CONTENT! -->
+        <div class="w3-main" style="margin-left:300px;margin-top:43px;">
+
+          <!-- Header -->
+          <header class="w3-container" style="padding-top:22px; color: white;">
+
+            <br>
+            <h1><b><center>Your Object Storage</center></b></h1>
+	          <br>
+
+            <hr>
+
+          </header>
+
+
+          <div class="w3-row-padding w3-margin-bottom" >
+
+            <a href="../getback/" >
+
+              <div class="w3-quarter" style="width: 380px;">
+                <div class="w3-container w3-padding-16" style="background-color: rgba(0, 0, 102, 0.4); color: white; text-align: center; border-radius: 10px; margin-left: 15px; margin-right: 15px;">
+
+                  <br>
+                  <br>
+                  <br>
+
+                  <div class="w3-clear"></div>
+
+                  <h2>Show Buckets</h2>
+
+                  <br>
+                  <br>
+                  <br>
+
+                </div>
+              </div>
+            </a>
+
+            <a href="../createbsite/" >
+
+              <div class="w3-quarter" style="width: 380px;">
+                <div class="w3-container w3-padding-16" style="background-color: rgba(0, 0, 102, 0.4); color: white; text-align: center; border-radius: 10px; margin-left: 15px; margin-right: 15px;">
+
+		              <br>
+		              <br>
+                  <br>
+
+                  <div class="w3-clear"></div>
+
+                  <h2>Create Bucket</h2>
+
+                  <br>
+                  <br>
+                  <br>
+
+                </div>
+              </div>
+
+            </a>
+
+
+            <form method="POST" action="../deletebucket/" id="form">
+            {% csrf_token %}
+
+              <div class="w3-quarter" style="width: 380px;" onClick="sub()" >
+                <div class="w3-container w3-padding-16" style="background-color: rgba(0, 0, 102, 0.4); color: white; text-align: center; border-radius: 10px; margin-left: 15px; margin-right: 15px;" >
+
+		                <br>
+                    <br>
+                    <br>
+
+                    <div class="w3-clear"></div>
+                    <h2>Delete Bucket</h2>
+
+                    <br>
+                    <br>
+                    <br>
+
+                  </div>
+                </div>
+
+              <a href="../errorpublish" >
+              <div class="w3-quarter" style="width: 380px;">
+                <div class="w3-container w3-padding-16" style="background-color: rgba(0, 0, 102, 0.4); color: white; text-align: center; border-radius: 10px; margin-left: 15px; margin-right: 15px;">
+
+
+                  <br>
+                  <br>
+                  <br>
+
+                  <div class="w3-clear"></div>
+                  <h2>Publish Object</h2>
+
+                  <br>
+                  <br>
+                  <br>
+
+                </div>
+              </div>
+            </a>
+
+            </div>
+
+            <div class="w3-panel">
+              <div class="w3-row-padding" style="margin:0 -16px">
+
+	               <br>
+	               <br>
+	               <br>
+
+                 <div class="w3-twothird">
+
+
+                   <h3 style="color: white;"><strong> Your Buckets</strong></h3>
+
+                   <br>
+
+                      <h3><p style="color: white;">{{error}}</p></h3>
+
+                     <table class="w3-table w3-striped w3-white" style="width: 1570px; border-radius: 3px;">
+                       <!--<td><a href="../get/?i={{i}}/">{{i}}</a></td>-->
+
+                       <tr>
+                         <td>Bucketname</td>
+                         <td>Info</td>
+                         <td></td>
+                       </tr>
+
+                       {% for i in b %}
+                       <tr>
+                         <td><a href="../get/?i={{i}}/" style="text-decoration: none;"><input type="checkbox" name="bucket" value="{{ i }}" > &nbsp &nbsp  {{i}} </a></td>
+                         <td>{{d}}</td>
+                         <td></td>
+                       </tr>
+                       {% endfor %}
+
+
+
+                       </table>
+
+
+
+                 </div>
+               </div>
+             </div>
+            </form>
+
+             <br>
+             <br>
+
+
+<!--
+  <div class="w3-container">
+    <h5><strong>Your Stats</strong></h5>
+    <p>Your use of Storage</p>
+    <div class="w3-grey">
+      <div class="w3-container w3-center w3-padding w3-green" style="width:25%">+25%</div>
+    </div>
+
+    <p>Stat</p>
+    <div class="w3-grey">
+      <div class="w3-container w3-center w3-padding w3-orange" style="width:50%">50%</div>
+    </div>
+
+    <p>Stat</p>
+    <div class="w3-grey">
+      <div class="w3-container w3-center w3-padding w3-red" style="width:75%">75%</div>
+    </div>
+  </div>
+-->
+
+  <!--<div class="w3-container">
+    <h5>Countries</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+      <tr>
+        <td>United States</td>
+        <td>65%</td>
+      </tr>
+      <tr>
+        <td>UK</td>
+        <td>15.7%</td>
+      </tr>
+      <tr>
+        <td>Russia</td>
+        <td>5.6%</td>
+      </tr>
+      <tr>
+        <td>Spain</td>
+        <td>2.1%</td>
+      </tr>
+      <tr>
+        <td>India</td>
+        <td>1.9%</td>
+      </tr>
+      <tr>
+        <td>France</td>
+        <td>1.5%</td>
+      </tr>
+    </table><br>
+    <button class="w3-button w3-dark-grey">More Countries �<i class="fa fa-arrow-right"></i></button>
+  </div>
+  <hr>
+  <div class="w3-container">
+    <h5>Recent Users</h5>
+    <ul class="w3-ul w3-card-4 w3-white">
+      <li class="w3-padding-16">
+        <img src="/w3images/avatar2.png" class="w3-left w3-circle w3-margin-right" style="width:35px">
+        <span class="w3-xlarge">Mike</span><br>
+      </li>
+      <li class="w3-padding-16">
+        <img src="/w3images/avatar5.png" class="w3-left w3-circle w3-margin-right" style="width:35px">
+        <span class="w3-xlarge">Jill</span><br>
+      </li>
+      <li class="w3-padding-16">
+        <img src="/w3images/avatar6.png" class="w3-left w3-circle w3-margin-right" style="width:35px">
+        <span class="w3-xlarge">Jane</span><br>
+      </li>
+    </ul>
+  </div>
+  <hr>
+
+  <div class="w3-container">
+    <h5>Recent Comments</h5>
+    <div class="w3-row">
+      <div class="w3-col m2 text-center">
+        <img class="w3-circle" src="/w3images/avatar3.png" style="width:96px;height:96px">
+      </div>
+      <div class="w3-col m10 w3-container">
+        <h4>John <span class="w3-opacity w3-medium">Sep 29, 2014, 9:12 PM</span></h4>
+        <p>Keep up the GREAT work! I am cheering for you!! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><br>
+      </div>
+    </div>
+
+    <div class="w3-row">
+      <div class="w3-col m2 text-center">
+        <img class="w3-circle" src="/w3images/avatar1.png" style="width:96px;height:96px">
+      </div>
+      <div class="w3-col m10 w3-container">
+        <h4>Bo <span class="w3-opacity w3-medium">Sep 28, 2014, 10:15 PM</span></h4>
+        <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><br>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="w3-container w3-dark-grey w3-padding-32">
+    <div class="w3-row">
+      <div class="w3-container w3-third">
+        <h5 class="w3-bottombar w3-border-green">Demographic</h5>
+        <p>Language</p>
+        <p>Country</p>
+        <p>City</p>
+      </div>
+      <div class="w3-container w3-third">
+        <h5 class="w3-bottombar w3-border-red">System</h5>
+        <p>Browser</p>
+        <p>OS</p>
+        <p>More</p>
+      </div>
+      <div class="w3-container w3-third">
+        <h5 class="w3-bottombar w3-border-orange">Target</h5>
+        <p>Users</p>
+        <p>Active</p>
+        <p>Geo</p>
+        <p>Interests</p>
+      </div>
+    </div>
+  </div>-->
+	<!--<hr>
+  Footer
+  <<footer style="color: white;">
+
+    <p><center>Made by: Daniel Kaltenboeck and Rafael Lazenhofer</center></p>
+  </footer>
+  <hr>-->
+
+  <!-- End page content -->
+    </div>
+
+  </body>
+
+  <script>
+    // Get the Sidebar
+    var mySidebar = document.getElementById("mySidebar");
+
+    // Get the DIV with overlay effect
+    var overlayBg = document.getElementById("myOverlay");
+
+    // Toggle between showing and hiding the sidebar, and add overlay effect
+    function w3_open()
+    {
+        if (mySidebar.style.display === 'block')
+        {
+            mySidebar.style.display = 'none';
+            overlayBg.style.display = "none";
+        }
+
+        else
+        {
+          mySidebar.style.display = 'block';
+          overlayBg.style.display = "block";
+        }
+      }
+
+      // Close the sidebar with the close button
+      function w3_close()
+      {
+        mySidebar.style.display = "none";
+        overlayBg.style.display = "none";
+      }
+
+
+
+
+
+
+
+      function sub()
+      {
+        document.getElementById("form").submit();
+      }
+
+
+
+
+    </script>
+
+  </body>
+</html>
