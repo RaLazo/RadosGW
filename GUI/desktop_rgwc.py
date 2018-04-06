@@ -21,7 +21,6 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from graphic import gui_branding
 
-
 class RGWC(gui_branding):
 
     def __init__(self):
@@ -29,6 +28,7 @@ class RGWC(gui_branding):
         self.init()
     
     def init(self):  
+    
         self.table(3)  
         self.tabs()
         self.set_helpdesk()
@@ -39,6 +39,14 @@ class RGWC(gui_branding):
         self.set_toolbar()
         self.show()
 
+
 app = QApplication(sys.argv)
+ # Create and display the splash screen
+splash_pix = QPixmap('icon/RGWC.PNG')
+splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+splash.setMask(splash_pix.mask())
+splash.show()
+app.processEvents()
 w=RGWC()
+splash.finish(w)
 sys.exit(app.exec_())

@@ -29,7 +29,7 @@ class Account_Popup(QWidget):
 
     def initUI(self):
         self.setGeometry(100, 200, 300, 300)
-        self.resize(300,300)
+        #self.resize(300,300)
         self.setWindowTitle("Account")
         self.setWindowIcon(QIcon("icon/account.svg"))
         layout = QFormLayout()
@@ -62,8 +62,9 @@ class Account_Popup(QWidget):
         
     
     def on_click(self):
-        file = open("../UserData.txt","w") 
+        file = open("UserData.txt","w") 
         file.write(str(self.secertkey.text())+"\n"+str(self.accountkey.text())+"\n"+str(self.host.text()))
+        file.close()
         self.close()
 
 class Admin_Popup(QWidget):

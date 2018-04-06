@@ -27,7 +27,6 @@ myappid = 'mycompany.myproduct.subproduct.version' # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 
-
 class gui_branding(QMainWindow,QTabWidget):
     
     def __init__(self):
@@ -37,10 +36,14 @@ class gui_branding(QMainWindow,QTabWidget):
         super().__init__()
         file = open("UserData.txt","r") 
         string=file.read()
-        string=string.split("\n")    
-        self.r=rgw(string[0],string[1],string[2])
-        self.r.dp=string[3]
-        self.host=string[2]
+        file.close()
+        string=string.split("\n")
+        try:
+            self.r=rgw(string[0],string[1],string[2])
+            self.r.dp=string[3]
+            self.host=string[2]
+        except IndexError:
+            self.account_data()
         self.check = []
         self.checkb = []
         self.checkx = []
@@ -184,20 +187,23 @@ class gui_branding(QMainWindow,QTabWidget):
         dated die "Your buckets" up die sich im
         zweiten Tab "Tools" des "HelpDesk" befindet
         '''
-        mygroupbox = QGroupBox('Your Buckets')
-        myform = QFormLayout()
-        k = []
-        b=self.r.lists()
-        for i in range(len(b)):
-            k.append(b[i].split()[0])
-        i=0
-        Radiobutton = []
-        for i in range(len(k)):
-            Radiobutton.append(QRadioButton(k[i]))
-            Radiobutton[i].clicked.connect(lambda:self.radio(Radiobutton))
-            myform.addRow(Radiobutton[i])
-        mygroupbox.setLayout(myform)
-        self.scroll.setWidget(mygroupbox)
+        try:
+            mygroupbox = QGroupBox('Your Buckets')
+            myform = QFormLayout()
+            k = []
+            b=self.r.lists()
+            for i in range(len(b)):
+                k.append(b[i].split()[0])
+            i=0
+            Radiobutton = []
+            for i in range(len(k)):
+                Radiobutton.append(QRadioButton(k[i]))
+                Radiobutton[i].clicked.connect(lambda:self.radio(Radiobutton))
+                myform.addRow(Radiobutton[i])
+            mygroupbox.setLayout(myform)
+            self.scroll.setWidget(mygroupbox)
+        except AttributeError:
+            pass
         
     def tab_2(self):
         '''
@@ -410,9 +416,10 @@ class gui_branding(QMainWindow,QTabWidget):
             self.statusBar().showMessage('STATUS: Completed ')
         else:
              self.statusBar().showMessage('STATUS: ERROR can´t download this object')
+
     def account_data(self):
         self.popup_a=Account_Popup()
-    
+
     def set_helpdesk(self):
         '''
         setzt den "HelpDesk" bzw. initialiesirt in
