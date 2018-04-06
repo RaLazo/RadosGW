@@ -80,10 +80,9 @@ RadosGW - Connector
 RadosGW-Connector-GUI
 =================
 
-Ist eine Grafischebenutzeroberfläche um Buckets zu verwalten 
-Zurzeit ist diese noch in Arbeit und nicht voll funktionsfähig. 
+Ist eine Grafischebenutzeroberfläche um Buckets & Objekte zu verwalten. Näheres dazu im Wiki.
 
-Der derzeitige entwurf sieht wie folgt aus:
+Sie sieht wie folgt aus:
 
 <p align="center">
   <img src="GUI/icon/GUI.PNG" />
