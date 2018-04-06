@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html lang="en" >
+
+	<head>
+
+		<meta charset="UTF-8">
+		<title>Object Storage Solution</title>
+		<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+	</head>
+
+	<body background="{% static 'images/login.jpg' %}">
+
+		<div class="wrapper">
+			<div class="container">
+
+					<h1 style="color: white;"><strong>Welcome to your Storage</strong></h1>
+
+  <form class="form" method="POST" action ="../create/">
+    {% csrf_token %}
+    <input name="username" type="text" placeholder="Your Username" >
+    <input name="password" type="password" placeholder="Your Password" >
+    <!--<input type="button" value="Login" id="login-button" style="width: 150px">-->
+    <button  style="width: 150px">Create User</button>
+
+  </form>
+</div>
+</div>
+
+
+</body>
+
+</html>

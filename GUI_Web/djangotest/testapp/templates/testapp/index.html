@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html lang="en" >
+
+	<head>
+
+		<meta charset="UTF-8">
+		<title>Object Storage Solution</title>
+		<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+	</head>
+
+	<body background="{% static 'images/login.jpg' %}">
+
+		<div class="wrapper">
+			<div class="container">
+
+					<h1 style="color: white;"><strong>Welcome to your Storage</strong></h1>
+
+				<form class="form" method="POST" action ="check/" id="form">
+					{% csrf_token %}
+					<input name="username" type="text" placeholder="Username" >
+					<input name="password" type="password" placeholder="Password" >
+					<!--<input type="button" value="Login" id="login-button" style="width: 150px">-->
+					<button id="login-button" style="width: 150px">Login</button>
+					<button id="create-button" style="width: 150px" type="submit" value="create" name="create">Create User</button>
+				</form>
+
+			</div>
+		</div>
+
+		<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+		<script type="text/javascript">
+
+			$("#login-button").click(function(event)
+
+			{
+				event.preventDefault();
+
+				$('form').fadeOut(700, function(){ document.getElementById('form').submit();});
+				$('.wrapper').addClass('form-success');
+
+			}
+			);
+
+		</script>
+
+	</body>
+
+</html>
