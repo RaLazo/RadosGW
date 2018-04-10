@@ -63,6 +63,9 @@ class gui_branding(QMainWindow,QTabWidget):
         self.admin_conector()
     
     def tab_3(self):
+        '''
+        Initialisiert das Admin Tab
+        '''
         layout = QFormLayout()
         l1 = QLabel() 
         text=QLabel()
@@ -541,7 +544,7 @@ class gui_branding(QMainWindow,QTabWidget):
         [self.table.insertColumn(i) for i in range(colums)]
         width = self.table.verticalHeader().width()
         width += self.table.horizontalHeader().length()+100
-    
+    '''
     def set_table2(self,b):
         del self.table
         a=[]
@@ -557,7 +560,39 @@ class gui_branding(QMainWindow,QTabWidget):
         self.checkx = x 
         self.checkb = a 
         self.table_output_type=1
-        
+    '''        
+    def set_table2(self,b):
+        del self.table
+        a=[]
+        self.table(2)
+        [self.table.insertRow(i) for i in range(len(b))]
+        x=[]
+        for i in range(len(b)):
+            y=b[i].split()[0]
+            x.append(QPushButton(y,self))
+            a.append(QCheckBox(str(i),parent=self.table))
+            self.table.setCellWidget(i, 0, a[i])
+            self.table.setCellWidget(i, 1, x[i])
+            a[i].clicked.connect(lambda: self.checker(a,x))
+            x[i].clicked.connect(lambda: self.get_user_info(y))
+            #self.table.setItem(i, 1, QTableWidgetItem(x[i]))
+        self.checkx = x 
+        self.checkb = a 
+        self.table_output_type=1
+    
+    def get_user_info(self,y):
+        cmd='radosgw-admin user info --uid='+y 
+        stdin,stdout,stderr=self.ssh.exec_command(cmd)
+        outlines=stdout.readlines()
+        output=str(outlines)
+        a=output.find("access")
+        x=output.find('swift')
+        output=output[a:x]
+        output.replace("\n","")
+        cb = QApplication.clipboard()
+        cb.clear(mode=cb.Clipboard)
+        cb.setText(output, mode=cb.Clipboard)
+        #QMessageBox.about(self, "Userdata", output)
 
     def set_table(self,b):
         '''

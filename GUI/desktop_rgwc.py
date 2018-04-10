@@ -40,8 +40,9 @@ class RGWC(gui_branding):
         self.show()
 
 
-app = QApplication(sys.argv)
+
  # Create and display the splash screen
+app = QApplication(sys.argv)
 splash_pix = QPixmap('icon/RGWC.PNG')
 splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
 splash.setMask(splash_pix.mask())
