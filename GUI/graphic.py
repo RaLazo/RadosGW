@@ -590,17 +590,21 @@ class gui_branding(QMainWindow,QTabWidget):
         stdin,stdout,stderr=self.ssh.exec_command(cmd)
         outlines=stdout.readlines()
         output = ""
+        out = ""
         for line in outlines:
             output = output + line.strip()
         io= StringIO(output)
         data = json.load(io)
         for element in data['keys']:
             output = "User: "+element['user'] + '\n'
+            out = element['user'] + '\n'
             output = output+"Acceskey: "+ element['access_key'] +'\n'
+            out = out + element['access_key'] +'\n'
             output = output+"Secretkey: "+ element['secret_key']
+            out = out +  element['secret_key']
         cb = QApplication.clipboard()
         cb.clear(mode=cb.Clipboard)
-        cb.setText(output, mode=cb.Clipboard)
+        cb.setText(out, mode=cb.Clipboard)
         QMessageBox.about(self, "Userdata", output)
         self.statusBar().showMessage('STATUS: Completed')
     def set_table(self,b):
