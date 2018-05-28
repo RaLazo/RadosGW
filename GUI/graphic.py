@@ -16,7 +16,9 @@
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
 import sys
+import json
 import paramiko
+from io import StringIO
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -80,11 +82,9 @@ class gui_branding(QMainWindow,QTabWidget):
         #data_button = QPushButton("Show User Data",self)
         #data_button.clicked.connect(self.show)
         l1.setAlignment(Qt.AlignCenter)
-        l1.setText("TEST VERSION!")
         l1.setFont(QFont("Calibri", 11, QFont.Bold))
         button_layout.addWidget(check_button)
         button_layout.addWidget(button)
-        layout.addRow(l1)
         layout.addRow(text)
         layout.addRow(self.createbox)
         layout.addRow(button_layout)
@@ -349,6 +349,10 @@ class gui_branding(QMainWindow,QTabWidget):
         '''
         self.close()
         try:
+            self.ssh.close()
+        except (AttributeError):
+            pass
+        try:
             self.popup_a.close()
         except (AttributeError):
             pass
@@ -581,19 +585,24 @@ class gui_branding(QMainWindow,QTabWidget):
         self.table_output_type=1
     
     def get_user_info(self,y):
+        self.statusBar().showMessage('STATUS: Collecting userdata . . .') 
         cmd='radosgw-admin user info --uid='+y 
         stdin,stdout,stderr=self.ssh.exec_command(cmd)
         outlines=stdout.readlines()
-        output=str(outlines)
-        a=output.find("access")
-        x=output.find('swift')
-        output=output[a:x]
-        output.replace("\n","")
+        output = ""
+        for line in outlines:
+            output = output + line.strip()
+        io= StringIO(output)
+        data = json.load(io)
+        for element in data['keys']:
+            output = "User: "+element['user'] + '\n'
+            output = output+"Acceskey: "+ element['access_key'] +'\n'
+            output = output+"Secretkey: "+ element['secret_key']
         cb = QApplication.clipboard()
         cb.clear(mode=cb.Clipboard)
         cb.setText(output, mode=cb.Clipboard)
-        #QMessageBox.about(self, "Userdata", output)
-
+        QMessageBox.about(self, "Userdata", output)
+        self.statusBar().showMessage('STATUS: Completed')
     def set_table(self,b):
         '''
         Fügt bzw. formiert die Tabelle je nach gebrauch um bzw. fügt 
