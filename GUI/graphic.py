@@ -145,7 +145,12 @@ class gui_branding(QMainWindow,QTabWidget):
         self.statusBar().showMessage('STATUS: creating User . . .')   
         cmd = "radosgw-admin user create --uid="+self.createbox.text()+" --display-name="+self.createbox.text()+" >> s3_user_data/"+self.createbox.text()+".txt"
         self.ssh.exec_command(cmd)
+        self.createbox.clear()
         self.statusBar().showMessage('STATUS: Completed')   
+        
+        self.statusBar().showMessage('STATUS: Updating table . . .')    
+        self.show_all_users()
+        self.statusBar().showMessage('STATUS: Completed')  
 
     def delete_users(self):
         self.statusBar().showMessage('STATUS: deleting . . .')
@@ -564,7 +569,18 @@ class gui_branding(QMainWindow,QTabWidget):
         self.checkx = x 
         self.checkb = a 
         self.table_output_type=1
-    '''        
+    '''    
+    def checker2(self,a,x):
+        '''
+        Überprüft welche Elemente der 
+        Table angehakt sind und speichert diese 
+        in ein Array
+        '''
+        del self.check[:]
+        for i in range(len(a)):
+            if str(a[i].isChecked())=="True":
+                self.check.append(x[i].text())  
+
     def set_table2(self,b):
         del self.table
         a=[]
@@ -577,15 +593,20 @@ class gui_branding(QMainWindow,QTabWidget):
             a.append(QCheckBox(str(i),parent=self.table))
             self.table.setCellWidget(i, 0, a[i])
             self.table.setCellWidget(i, 1, x[i])
-            a[i].clicked.connect(lambda: self.checker(a,x))
-            x[i].clicked.connect(lambda: self.get_user_info(y))
+            x[i].setCheckable(True)
+            a[i].clicked.connect(lambda: self.checker2(a,x))
+            x[i].clicked.connect(lambda: self.get_user_info(x))
             #self.table.setItem(i, 1, QTableWidgetItem(x[i]))
         self.checkx = x 
         self.checkb = a 
         self.table_output_type=1
     
-    def get_user_info(self,y):
+    def get_user_info(self,x):
         self.statusBar().showMessage('STATUS: Collecting userdata . . .') 
+        for i in range(len(x)):
+            if x[i].isChecked():
+              x[i].setChecked(False)
+              y=x[i].text()   
         cmd='radosgw-admin user info --uid='+y 
         stdin,stdout,stderr=self.ssh.exec_command(cmd)
         outlines=stdout.readlines()
@@ -607,6 +628,7 @@ class gui_branding(QMainWindow,QTabWidget):
         cb.setText(out, mode=cb.Clipboard)
         QMessageBox.about(self, "Userdata", output)
         self.statusBar().showMessage('STATUS: Completed')
+
     def set_table(self,b):
         '''
         Fügt bzw. formiert die Tabelle je nach gebrauch um bzw. fügt 
