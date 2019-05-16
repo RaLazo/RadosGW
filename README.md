@@ -42,7 +42,7 @@ Verwendung
 Die Datei radosgwc.py muss mit dem Pythoninterpreter ausgeführt werden: 
 
 ```
-pyhton radosgwc.py
+python radosgwc.py
 ```
 Alle Option erhält man mit 'h' => help
 ```
